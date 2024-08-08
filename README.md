@@ -32,7 +32,9 @@ optional option: pickle_it == False (default)
 With pickle_it:True, pickle files are written using output of dilution factor and dose computations. This is highly useful for analizing the data for research, analysis and machine/deep learning application. 
 
 **Contributing** 
+
 We welcome contributions to the pyDOSEIA project! If you have suggestions, want to improve the code, or have ideas for new features, please create a Pull Request or raise an issue. If you encounter any bugs or have questions about using the package, don't hesitate to contact us. Your feedback and contributions are invaluable in making pyDOSEIA a better tool for the community.
 
 **Contact information**
+
 Copyright(C) 2023 Author and Developer: Dr. Biswajit Sadhu (biswajit.chem001@gmail.com)
