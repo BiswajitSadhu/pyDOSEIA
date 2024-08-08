@@ -1,0 +1,13 @@
+{run_dose_computation: True, exposure_period: 5, consumption_time_food: 30, age_group: [1], consider_progeny: true, downwind_distances: [100, 200, 300, 500, 700, 1000, 1600, 2000, 4000],
+  element_list: [Ar], have_dilution_factor: false, have_met_data: false, ignore_half_life: 1800,
+  inges_param_dict: {C_wi: 0, alpha: 3, alpha_dry_forage: 3, alpha_wet_crops: 0.3,
+    f_p: 0.7, q_f: 1.2, q_m: 16, q_w: 0.06, q_w_meat: 0.004, t_b: 11000, t_e: 30,
+    t_e_food_crops: 60, t_e_forage_grass: 30, t_f: 1, t_h_animal_pasture: 0, t_h_animal_stored_feed: 90,
+    t_h_wet_crops: 1, t_m: 1}, inges_param_dict_adult: {DID_fish: 18.3, DID_meat: 14.6,
+    DID_milk: 182.5, DID_veg: 383.3, DID_water_and_beverage: 0.73}, inges_param_dict_infant: {
+    DID_fish: 1.5, DID_meat: 1.2, DID_milk: 146, DID_veg: 78.5, DID_water_and_beverage: 0.26},
+  input_file_name: ins_ar, instantaneous_release_bq_list: [31536000], logdir_name: ins_ar_pydose_loginfo,
+  long_term_release: false, max_dilution_factor: null, n: 3, output_file_name: ins_ar_pydose_out,
+  plant_boundary: 1600, rads_list: [Ar-41], release_height: 100, run_plume_shine_dose: true,
+  scaling_dilution_factor_based_on_met_data_speed_distribution: false, single_plume: true,
+  soiltype: peatsoil, type_rad: [Max], weathering_corr: true}
