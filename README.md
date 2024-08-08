@@ -1,4 +1,4 @@
-#![pydoseia_logo(1)](https://github.com/user-attachments/assets/dfa5fd0f-4d20-4481-8ca8-a90dc9dbe627) 
+![pydoseia_logo(1)](https://github.com/user-attachments/assets/dfa5fd0f-4d20-4481-8ca8-a90dc9dbe627) 
 ## pyDOSEIA
 **A python-based package for computation of Dose from atmospheric release**
 
