@@ -20,6 +20,7 @@ conda activate pydose
 pip install numpy scipy matplotlib pandas xlrd
 
 **Usage**
+
 run Interactive Input Generator using following command:
 python auto_input_generator.py
 
