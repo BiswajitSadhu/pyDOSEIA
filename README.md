@@ -13,12 +13,29 @@ Description: We introduce pyDOSEIA, a robust Python package, designed for radiat
 
 **Installation**
 
+*ONLINE INSTALLATION*
+
 The installation guides for these environments are provided below:
 ```bash
 conda create -n pydose python=3.10
 conda activate pydose
 pip install numpy scipy matplotlib pandas xlrd
 ```
+
+*OFFLINE INSTALLATION*
+
+1. Download the pyDOSEIA package from GitHub.
+2. Download the latest version of Anaconda from [Anaconda Downloads](https://www.anaconda.com/download) (Windows and Linux; macOS is not tested).
+3. Install Anaconda using the instructions provided in the [Anaconda Installation Guide](https://docs.anaconda.com/anaconda/install/).
+4. After successful installation, open the Anaconda Command Prompt and type `conda list` to view all the Python packages installed with Anaconda.
+5. Place the pyDOSEIA package (after unzipping) on the same disk (C, D, or E as applicable for Windows) to make it easy to track the code and facilitate editing and running pyDOSEIA.
+6. Upgrade Joblib, which is required for parallel computation of the plume shine dose. Download the Joblib package from [Joblib GitHub](https://github.com/joblib/joblib).
+7. Open the Anaconda Command Prompt, navigate to the folder containing the Joblib files, and run the command `python setup.py install` to upgrade Joblib. Confirm the installation by running `conda list`.
+8. Install `xlrd-2.0.1` for reading Excel files (which is generally not automatically installed with Anaconda). Download `xlrd-2.0.1` from [PyPI](https://pypi.org/project/xlrd/#files).
+9. Place the file `xlrd-2.0.1-py2.py3-none-any.whl` in the Anaconda directory and run the command `pip install xlrd-2.0.1-py2.py3-none-any.whl` to install `xlrd-2.0.1`. Confirm the installation by running `conda list`.
+10. Steps 8-9 are required for PCs that are not connected to the internet. If the system is connected to the internet, you can directly install `xlrd` using the command `pip install xlrd`.
+11. pyDOSEIA is now ready for use. Follow the instructions in the USAGE section of README file for running pyDOSEIA.
+
 **Usage**
 
 run Interactive Input Generator using following command:
