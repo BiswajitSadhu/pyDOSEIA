@@ -1,0 +1,134 @@
+# General Dose calculation parameters ########################
+# path of excel file containing meteorological data.
+path_met_file: 'met_data/Met_data_5Yr.xlsx'
+# sheet name; it is anticipated that year of data is the sheet name; multiple year may be provided; ['2017','2018']
+#sheet_names: ['2017']
+excel_sheet_name: ['2017','2018','2019','2020','2021']
+# column names of excel sheet containing meteorological data. The sequence/order of columns should be strictly followed.
+# for instance, hour should be the first index followed by speed, direction and stability category
+column_names: ['HOUR', 'WS 10m(kmph)', 'DIR at 10m', 'STBCLASS']
+# option for including calm correction in TJFD : True or False
+calm_correction: True
+# number of days of meteorological data (year wise)
+num_days: [365,365,365,366,365]
+
+# follows 24-hour time format. 0-24 indicate 24 hour operation. This is only used for computation of dilution factor. Based on the
+# user specific data, only relevant met data for the mentioned period is used to compute dilution factor.
+# this is useful for the cases where the plant is operating during specific time of the day.
+start_operation_time: 0
+end_operation_time: 24
+
+# mode of release:
+# for continuous release, the meteorological data is required. The dilution factor is computed from the met data.
+long_term_release: False
+# annual discharge in Bq/year; may be obtained from the facility in charge.
+annual_discharge_bq_rad_list: [1000000, 1000000, 2000000]
+
+# for single plume or instantaneous release, synthetic met data is created.
+single_plume: True
+# used as source term for instantaneous release; unit Bq
+instantaneous_release_bq_list: [1000000, 1000000, 2000000]
+scaling_dilution_factor_based_on_met_data_speed_distribution: True
+
+# maximum dilution factor (optional) among 16 wind sectors;
+# if meteorological data is available, software will calculate the max_dilution_Factor.
+# in case user has access to pre-computed dilution factor value, the meteorological data is not required.
+max_dilution_factor: None
+# list of radionuclides for which dose needs to be calculated; here isotope mass number is must. #['Cs-137','Co-60']
+rads_list: ['Co-60','H-3','C-14']
+# list of elements for which dose needs to be calculated
+element_list: ['Co','H','C']
+# sampling time for meteorological data; default= 60 minute; sampling_time correction is on TODO list
+sampling_time: 60
+# release height of plume
+release_height: 10
+# measurement height of meteorological data
+measurement_height: 10
+# list of downwind distance for calculation; must be a list e.g. [100,200] in metre[100,200,300,500,800,1000,1600,2000,3000,5000]
+downwind_distances: [100,200]
+# the total dose (component wise i.e. total inhalation, total ground shine, total submersion and total ingestion dose)
+# will be printed for the plant boundary (metre); note that any distance from the input lise of "downwind_distances" can be designated plant_boundary
+plant_boundary: 1600
+# age list for calculation; must be a list e.g. [1,18]; 1 for infant and 18 for adult.
+age_group: [1,18]
+
+
+# tritium inhalation; HT, HTO and OBT
+# C_HTO_atm is the annual average concentration of tritium in ground level air estimated from release rate
+# discharge_tritium: [1000000]
+#CR_a_HTO_data = {'cow_milk':[0.87],'goat_milk':[0.83],
+#                    'goat_meat':[0.67], 'lamb_meat':[0.78],'beef_meat':[0.66],
+#                     'pork_meat':[0.67],  'broiler_meat':[0.76],'egg':[0.66] }
+#veg_type_data = {'leafy_vegetables':[0.51, 0.92],'non_leafy_vegetables':[0.53, 0.92],
+#                    'root_crops':[0.52, 0.87], 'all_others':[0.56, 0.495] }
+# Note: calculation for 'egg' is not implemented
+animal_product_list_for_tritium: ['cow_milk', 'goat_meat']
+animal_product_list_for_C14: ['cow_milk', 'goat_meat']
+# options are same as veg_type_data; used for dose computation for terrestrial animal
+animal_feed_type: 'leafy_vegetables'
+veg_type_list: ['leafy_vegetables','root_crops']
+# options: arctic, Mediterranean, meritime, Continental
+climate: 'Continental'
+
+# Parameter for Ground Shine and Submersion Dose Calculations#################################
+# option for adding weathering correction: True or False; for ground shine dose
+weathering_corr: False
+# option for considering progeny contribution in dose calculation: True or False
+consider_progeny: True
+# ignore progenies which have half life less than 1800 seconds.
+ignore_half_life: 1800
+# option for continuous release scenario : True or False
+
+# Parameter for Plume Shine Dose calculations
+# option for running plume shine dose calculation : True or False
+run_plume_shine_dose: False
+
+# for plume shine dose calculation. default=1, For high accuracy use n = 2 or 3, it exponentially increases the computational time
+n: 1
+
+# Parameter for Ingestion Dose calculations ####################################
+# option: 'peatsoil' or 'othersoil'
+soiltype: 'peatsoil'
+# parameters used for ingestion dose calculation; if not provided default values will be used and will be printed in log file
+# alpha (m2/kg) = fraction of deposited activity intercepted by the edible portion of vegetation per unit mass ; source: table VIII, page 64 of SRS 19
+# t_e (days) = the period that the crops are exposed to contamination during growing season
+# F_v (Bq/kg dry soil) = concentration for uptake of radionuclide from soil by edible parts of crops.
+# t_b = duration of discharge of material in a day; for 30 years it is 11000.
+# t_h_wet_crops (days) = delay time i.e. time interval between harvest and consumption of food.
+# t_h_animal_pasture, t_h_animal_stored_feed = time in animal feed.
+# f_p = fraction of the year that animal consumes fresh pasture vegetation.
+# c_pi = concentration of radionuclide in stored feeds (Bq/Kg).
+# t_h_delay_time = 90 (day).
+# t_m (day) = average time between collection and human consumption of milk.
+# t_f (day) = average time between collection and human consumption of meat.
+# q_m (kg/day) = amount of feed (in dry matter) consumed per day.
+# q_w (m3/d) = amount of water consumed by animal per day. Source: Table B1 B2 page 66 (ECPDA)
+# C_wi (Bq/m3) = concentration of radionuclide in water.
+# q_f (Kg/d) = amount of feed consumed by animal; goat and sheep; meat producing animal.
+# q_w_meat (m3/day) = water intake of meat producing animal.
+inges_param_dict: {'alpha_wet_crops': 0.3, 'alpha_dry_forage': 3, 't_e_food_crops': 60, 't_e_forage_grass': 30, 't_b': 11000, 't_h_wet_crops': 1, 't_h_animal_pasture': 0, 't_h_animal_stored_feed': 90,
+                            'C_wi': 0, 'f_p': 0.7,'alpha': 3, 't_e': 30, 't_m': 1, 't_f': 1, 'q_m': 16, 'q_w': 0.06, 'q_f': 1.2,'q_w_meat': 0.004}
+
+
+# additional parameters used for ingestion dose calculation (Adult); if not provided default values will be used and will be printed in log file
+# DID_veg = 76.7  # 383.3 #default but ask to user; kg/year
+# DID_milk = 182.5  # l/year
+# DID_meat = 14.6  # kg/year
+# DID_fish = 18.3  # kg/year
+# DID_water_and_beverage = 0.73  # m3/year
+inges_param_dict_adult: {'DID_veg': 383.3, 'DID_milk': 182.5, 'DID_meat': 14.6, 'DID_fish': 18.3, 'DID_water_and_beverage': 0.73}
+# additional parameters used for ingestion dose calculation (Infant); if not provided default values will be used and will be printed in log file
+# DID_veg = 78.5  # default but ask to user; kg/year
+# DID_milk = 146  # l/year
+# DID_meat = 1.2  # kg/year
+# DID_fish = 1.5  # kg/year
+# DID_water_and_beverage = 0.26  # m3/year
+inges_param_dict_infant: {'DID_veg': 78.5, 'DID_milk': 146, 'DID_meat': 1.2,'DID_fish': 1.5, 'DID_water_and_beverage': 0.26}
+
+
+# provide consumption time of food for instantaneous release; default is 30 days
+# unit is in days
+consumption_time_food: 30
+
+#plot dilution factor sector wise, individual plots will be generated for specific down wind distances.
+plot_dilution_factor: True
