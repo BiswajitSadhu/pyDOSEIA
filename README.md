@@ -14,11 +14,11 @@ Description: We introduce pyDOSEIA, a robust Python package, designed for radiat
 **Installation**
 
 The installation guides for these environments are provided below:
-
+```bash
 conda create -n pydose python=3.10
 conda activate pydose
 pip install numpy scipy matplotlib pandas xlrd
-
+```
 **Usage**
 
 run Interactive Input Generator using following command:
