@@ -19,7 +19,7 @@ The installation guides for these environments are provided below:
 ```bash
 conda create -n pydose python=3.10
 conda activate pydose
-pip install numpy scipy matplotlib pandas xlrd openpyxl
+conda install numpy scipy matplotlib pandas xlrd openpyxl joblib
 python auto_input_generator.py
 ```
 
