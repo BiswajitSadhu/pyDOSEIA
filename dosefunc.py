@@ -1331,8 +1331,8 @@ class DoseFunc:
                             -0.5 * (z + self.release_height) ** 2 / (self.sigmaz(stab_cat, x)[0] ** 2)))
                 # used adaptive gaussian quadrature
                 int_expo_xyz = integrate.tplquad(expo_xyz, limit_list[0], limit_list[1], limit_list[2],
-                                                 limit_list[3], limit_list[4], limit_list[5], epsabs=1.49e-02,
-                                                 epsrel=1.49e-02)
+                                                 limit_list[3], limit_list[4], limit_list[5], epsabs=1.49e-05,
+                                                 epsrel=1.49e-05)
                 return int_expo_xyz[0]
 
             t = time.time()
@@ -1394,8 +1394,8 @@ class DoseFunc:
                             -0.5 * (z + self.release_height) ** 2 / (self.sigmaz(stab_cat, x)[0] ** 2)))
                 # used adaptive gaussian quadrature
                 int_expo_xyz = integrate.tplquad(expo_xyz, limit_list[0], limit_list[1], limit_list[2],
-                                                 limit_list[3], limit_list[4], limit_list[5], epsabs=1.49e-02,
-                                                 epsrel=1.49e-02)
+                                                 limit_list[3], limit_list[4], limit_list[5], epsabs=1.49e-03,
+                                                 epsrel=1.49e-03)
                 return int_expo_xyz[0]
 
             if not self.config['have_met_data']:

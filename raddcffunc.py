@@ -1193,10 +1193,10 @@ class RaddcfFunc(DoseFunc):
                                                                                     sc=stab_cat))
 
         # find limits for triple integral evaluation
-        if self.release_height - (3 * SIGMAZ) > 0:
+        if self.release_height - (3 * SIGMAZ) > 1:
             zin_lim = self.release_height - (3 * SIGMAZ)
         else:
-            zin_lim = 0
+            zin_lim = 1
         zf_lim = self.release_height + (3 * SIGMAZ)
         yin_lim = -3 * SIGMAY
         yf_lim = 3 * SIGMAY
@@ -1204,11 +1204,11 @@ class RaddcfFunc(DoseFunc):
         # external exposure dose in a nuclear emergency." Nuclear engineering and design 231, no. 2 (2004): 211-216.
         # to solve the problem of singularity the integration is terminated at 1 m downwind distance from
         # the release point
-        times = 5
-        if X1 - (times * MFP) > 0:
+        times = 3
+        if X1 - (times * MFP) > 1:
             xin_lim = X1 - (times * MFP)
         else:
-            xin_lim = 0
+            xin_lim = 1
         xf_lim = X1 + (times * MFP)
         logging.getLogger("Spatial Limits for Plume Dose Calculation").info(
             "zin_lim: {zin_lim}, zf_lim: {zf_lim}, yin_lim: {yin_lim}, yf_lim: {yf_lim}, xin_lim: {xin_lim}, "
@@ -1243,10 +1243,10 @@ class RaddcfFunc(DoseFunc):
                                                                                     sc=stab_cat))
 
         # find limits for triple integral evaluation
-        if self.release_height - (3 * SIGMAZ) > 0:
+        if self.release_height - (3 * SIGMAZ) > 1:
             zin_lim = self.release_height - (3 * SIGMAZ)
         else:
-            zin_lim = 0
+            zin_lim = 1
         zf_lim = self.release_height + (3 * SIGMAZ)
         # next two lines are specific for sector-averaged plume
         yin_lim = -(2 * 3.14 * X1) / (16 * 2)
@@ -1255,11 +1255,11 @@ class RaddcfFunc(DoseFunc):
         # external exposure dose in a nuclear emergency." Nuclear engineering and design 231, no. 2 (2004): 211-216.
         # to solve the problem of singularity the integration is terminated at 1 m downwind distance from
         # the release point
-        times = 5
-        if X1 - (times * MFP) > 0:
+        times = 3
+        if X1 - (times * MFP) > 1:
             xin_lim = X1 - (times * MFP)
         else:
-            xin_lim = 0
+            xin_lim = 1
         xf_lim = X1 + (times * MFP)
         logging.getLogger("Spatial Limits for Plume Dose Calculation").info(
             "zin_lim: {zin_lim}, zf_lim: {zf_lim}, yin_lim: {yin_lim}, yf_lim: {yf_lim}, xin_lim: {xin_lim}, "
