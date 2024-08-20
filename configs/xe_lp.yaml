@@ -1,0 +1,16 @@
+{Z: 0, age_group: [1, 18], annual_discharge_bq_rad_list: [31536000], consider_progeny: true,
+  downwind_distances: [1000], element_list: [
+    Ar], exposure_period: 30, have_dilution_factor: false, have_met_data: false,
+  ignore_half_life: 1800, inges_param_dict: {C_wi: 0, alpha: 3, alpha_dry_forage: 3,
+    alpha_wet_crops: 0.3, f_p: 0.7, q_f: 1.2, q_m: 16, q_w: 0.06, q_w_meat: 0.004,
+    t_b: 11000, t_e: 30, t_e_food_crops: 60, t_e_forage_grass: 30, t_f: 1, t_h_animal_pasture: 0,
+    t_h_animal_stored_feed: 90, t_h_wet_crops: 1, t_m: 1}, inges_param_dict_adult: {
+    DID_fish: 0.05, DID_meat: 0.04, DID_milk: 0.5, DID_veg: 1.05, DID_water_and_beverage: 0.002},
+  inges_param_dict_infant: {DID_fish: 0.004109, DID_meat: 0.0032876, DID_milk: 0.4,
+    DID_veg: 0.215, DID_water_and_beverage: 0.0007123}, input_file_name: arxe_lp,
+  like_to_scale_with_mean_speed: false, logdir_name: ps_arxe_lp, long_term_release: true,
+  max_conc_plume_central_line_gl: true, max_dilution_factor: null, measurement_height: 100,
+  output_file_name: arxe_lp.out, pickle_it: false, plant_boundary: 1000, plot_dilution_factor: false,
+  rads_list: [Ar-41], release_height: 100, run_dose_computation: true, run_plume_shine_dose: true,
+  run_ps_dose_parallel: true, scaling_dilution_factor_based_on_met_data_speed_distribution: false,
+  single_plume: false, soiltype: peatsoil, type_rad: [Max], weathering_corr: true}
