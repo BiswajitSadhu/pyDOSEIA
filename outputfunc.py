@@ -403,7 +403,7 @@ class OutputFunc(MetFunc):
             f.write('Half life of radionuclides:')
             f.write('\n')
             f.write(df_hl.__repr__())
-
+            print('DCFSSSSS:', DCFs)
             B = np.array(DCFs, dtype=object).T
             for ndx, A in enumerate(B):
                 df_dcf = pd.DataFrame(A.T, index=self.age_group,
@@ -770,7 +770,7 @@ class OutputFunc(MetFunc):
                 It uses the Parallel function from the joblib library with the maximum number of jobs set to the number of available CPU cores.
                 Each combination of downwind distance and age group is processed independently, improving overall computation speed.
         """
-        doses = Parallel(n_jobs=-1, verbose=100, return_as="generator")(
+        doses = Parallel(n_jobs=-1, verbose=100)(
             delayed(self.agewise_dose_inh_gs_submersion)(dst, ag) for dst, ag in
             list(itertools.product(self.downwind_distances, self.age_group)))
         return list(doses)
@@ -787,7 +787,7 @@ class OutputFunc(MetFunc):
                 It uses the Parallel function from the joblib library with the maximum number of jobs set to the number of available CPU cores.
                 Each combination of downwind distance and age group is processed independently, improving overall computation speed.
         """
-        ing_doses = Parallel(n_jobs=-1, verbose=100, return_as="generator")(
+        ing_doses = Parallel(n_jobs=-1, verbose=100)(
             delayed(self.agewise_ingestion_dose)(dst, ag) for dst, ag in
             list(itertools.product(self.downwind_distances, self.age_group)))
         return list(ing_doses)
@@ -804,7 +804,7 @@ class OutputFunc(MetFunc):
                 It uses the Parallel function from the joblib library with the maximum number of jobs set to the number of available CPU cores.
                 Each combination of downwind distance and age group is processed independently, improving overall computation speed.
         """
-        ps_doses = Parallel(n_jobs=-1, verbose=100, return_as="generator")(
+        ps_doses = Parallel(n_jobs=-1, verbose=100)(
             delayed(self.agewise_plume_shine_dose)(dst, ag) for dst, ag in
             list(itertools.product(self.downwind_distances, self.age_group)))
         return list(ps_doses)
@@ -821,7 +821,7 @@ class OutputFunc(MetFunc):
                 for all age groups. It uses the Parallel function from the joblib library with the maximum number of jobs set to the
                 number of available CPU cores. Each age group is processed independently, improving overall computation speed.
         """
-        dcfs = Parallel(n_jobs=-1, verbose=100, return_as="generator")(
+        dcfs = Parallel(n_jobs=-1, verbose=100)(
             delayed(self.agewise_dcfs_inh_gs_submersion)(ag) for ag in self.age_group)
         return list(dcfs)
 
@@ -868,7 +868,7 @@ class OutputFunc(MetFunc):
                 at that distance. The result is a list where each element corresponds to a downwind distance and contains a
                 dictionary with the dilution factor for each sector at that distance.
         """
-        dilfac = Parallel(n_jobs=-1, verbose=100, return_as="generator")(
+        dilfac = Parallel(n_jobs=-1, verbose=100)(
             delayed(self.dil_fac_all_sectors_all_dist)(d) for d in self.downwind_distances)
         return list(dilfac)
 

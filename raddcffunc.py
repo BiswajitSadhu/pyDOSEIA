@@ -418,18 +418,16 @@ class RaddcfFunc(DoseFunc):
         if consider_progeny:
             self.dcfs_gs_corr = np.array(dcf_corr_list)
             self.dcfs_gs = np.array(dcfs)
-            dcfs_combo = []
-            for i, j in zip(self.dcfs_gs_corr, self.dcfs_gs):
-                t = tuple([i, j])
-                dcfs_combo.append(t)
-            return dcfs_combo
+            stacked = np.vstack((self.dcfs_gs_corr, self.dcfs_gs))
+            A = stacked[:, 0]
+            B = stacked[:, 1]
+            return A, B
         else:
             self.dcfs_gs = np.array(dcfs)
-            dcfs_combo = []
-            for i, j in zip(self.dcfs_gs, self.dcfs_gs):
-                t = tuple([i, j])
-                dcfs_combo.append(t)
-            return dcfs_combo
+            stacked = np.vstack((self.dcfs_gs, self.dcfs_gs))
+            A = stacked[:, 0]
+            B = stacked[:, 1]
+            return A, B
 
     def find_progeny_name_and_yield_f(self, rad, master_file="library/dcf_corr.xlsx"):
         """
@@ -635,18 +633,17 @@ class RaddcfFunc(DoseFunc):
         if consider_progeny:
             self.dcf_list_submersion_corr = np.array(dcf_corr_list)
             self.dcf_list_submersion = np.array(dcfs)
-            dcfs_combo = []
-            for i, j in zip(self.dcf_list_submersion_corr, self.dcf_list_submersion):
-                t = tuple([i, j])
-                dcfs_combo.append(t)
-            return dcfs_combo
+            # the output becomes rad specific (corrected, uncorrected DCF)
+            stacked = np.vstack((self.dcf_list_submersion_corr, self.dcf_list_submersion))
+            A = stacked[:, 0]
+            B = stacked[:, 1]
+            return A, B
         else:
             self.dcf_list_submersion = np.array(dcfs)
-            dcfs_combo = []
-            for i, j in zip(self.dcf_list_submersion, self.dcf_list_submersion):
-                t = tuple([i, j])
-                dcfs_combo.append(t)
-            return dcfs_combo
+            stacked = np.vstack((self.dcf_list_submersion, self.dcf_list_submersion))
+            A = stacked[:, 0]
+            B = stacked[:, 1]
+            return A, B
 
     def dcf_list_ingestion(self, master_file="library/Dose_ecerman_final.xlsx", sheet_name="ingestion_gsr3", age=18):
         """

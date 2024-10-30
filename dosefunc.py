@@ -297,16 +297,6 @@ class DoseFunc:
             # take corrected DCF
             for bdx, (discharge_rad_per_year, dcf, effective_lambda) in enumerate(zip(discharge_q, dcfs,
                                                                                       effective_lambda_frac)):
-                # convert second to year as the DCF has unit 'second' ;
-                #if self.config['single_plume']:
-                #    # * (365 * 24 * 3600)
-                #    dcf = dcf[0]
-                #    # for instantaneous release
-                #    gs_dose = float(max_dilutfac_for_distance_secperm3) * float(discharge_rad_per_year) * \
-                #              float(dcf) * float(list_deposition_vel[bdx]) * float(1000) * float(effective_lambda)
-
-                # else:
-
                 # DCF is in Sv-m^2/Bq-second
                 # deposition rate unit: Bq/m2-second
                 # deposition velocity unit: m/s
@@ -319,13 +309,13 @@ class DoseFunc:
                 gs_dose = conc_rad_ground * dcf[0] * float(1000)
                 # convert dose to year
                 gs_dose = gs_dose * (365 * 24 * 3600)
+                logging.getLogger("Ground shine Dose").info(
+                    'DCF used for radionuclide {} is {} Sv-m^2/Bq-second:'.format(self.rads_list[bdx],
+                                                                                          dcf))
                 print('Deposition rate for radionuclide {} is {} Bq/m2-second'.format(self.rads_list[bdx],
                                                                                       deposition_rate))
                 print('Concentration of radionuclide {} on the ground is {} Bq/m^2:'.format(self.rads_list[bdx],
                                                                                             conc_rad_ground))
-                # print('ground shs_dose:', list_deposition_vel[bdx], discharge_rad_per_year,deposition_rate, conc_rad_ground, gs_dose)
-                # gs_dose = float(max_dilutfac_for_distance_secperm3) * float(discharge_rad_per_year) * \
-                #          float(dcf) * float(list_deposition_vel[bdx]) * float(effective_lambda) * float(1000)
                 gs_dose_per_rad.append(gs_dose)
                 tot_gs_dose += gs_dose
 
@@ -333,14 +323,6 @@ class DoseFunc:
             # take uncorrected DCF
             for bdx, (discharge_rad_per_year, dcf, effective_lambda) in enumerate(zip(discharge_q, dcfs,
                                                                                       effective_lambda_frac)):
-                # convert second to year as the DCF has unit 'second' ;
-                # check again on Monday.
-                # if self.config['single_plume']:
-                #    dcf = dcf[1]
-                #    # for instantaneous release remove float(effective_lambda)
-                #    gs_dose = float(max_dilutfac_for_distance_secperm3) * float(discharge_rad_per_year) * float(dcf) * \
-                #              float(list_deposition_vel[bdx]) * float(1000) * float(effective_lambda)
-                # else:
                 #    # long-term release
                 # DCF is in Sv-m^2/Bq-second
                 # deposition rate unit: Bq/m2-second
@@ -356,6 +338,9 @@ class DoseFunc:
                 # convert dose to year
                 gs_dose = gs_dose * (365 * 24 * 3600)
                 logging.getLogger("Ground shine Dose").info(
+                    'DCF used for radionuclide {} is {} Sv-m^2/Bq-second:'.format(self.rads_list[bdx],
+                                                                                          dcf))
+                logging.getLogger("Ground shine Dose").info(
                     'Deposition rate for radionuclide {} is {} Bq/m2-second'.format(self.rads_list[bdx],
                                                                                       deposition_rate))
                 logging.getLogger("Ground shine Dose").info(
@@ -366,9 +351,6 @@ class DoseFunc:
                 print('Concentration of radionuclide {} on the ground is {} Bq/m^2:'.format(self.rads_list[bdx],
                                                                                             conc_rad_ground))
                 # long-term release
-                # dcf = dcf[1] * (365 * 24 * 3600)
-                # gs_dose = float(max_dilutfac_for_distance_secperm3) * float(discharge_rad_per_year) * float(dcf) * \
-                #          float(list_deposition_vel[bdx]) * float(effective_lambda) * float(1000)
                 gs_dose_per_rad.append(gs_dose)
                 tot_gs_dose += gs_dose
 
@@ -419,7 +401,10 @@ class DoseFunc:
         # dcfs has following form [(corrected_rad_1, uncorrected_rad_1),(corrected_rad_2, uncorrected_rad_2)]
         if self.config['consider_progeny']:
             # take corrected DCF
-            for discharge_rad, dcf in zip(discharge_q, dcfs):
+            for bdx, (discharge_rad, dcf) in enumerate(zip(discharge_q, dcfs)):
+                logging.getLogger("Submersion Dose").info(
+                    'DCF used for radionuclide {} is {} Sv-m3/Bq-s:'.format(self.rads_list[bdx],
+                                                                                          dcf))
 
                 if self.config['single_plume']:
                     # converting DCF /sec to /year; for single plume do not convert dcf unit to year
@@ -437,7 +422,10 @@ class DoseFunc:
                 sub_dose_per_rad.append(submersion_dose)
         else:
             # take uncorrected DCF
-            for discharge_rad, dcf in zip(discharge_q, dcfs):
+            for bdx, (discharge_rad, dcf) in enumerate(zip(discharge_q, dcfs)):
+                logging.getLogger("Submersion Dose").info(
+                    'DCF used for radionuclide {} is {} Sv-m3/Bq-s:'.format(self.rads_list[bdx],
+                                                                                          dcf))
                 if self.config['single_plume']:
                     # converting DCF /sec to /year; for single plume do not convert dcf unit to year
                     # bq-s/m3 * sv/s * m3/bq
