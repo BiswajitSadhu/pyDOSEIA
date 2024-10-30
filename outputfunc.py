@@ -267,12 +267,9 @@ class OutputFunc(MetFunc):
             '\nN.B. The height and distances are in metre unit. If given, the unit of ignore_half_life and exposure_period are second and year, respectively.')
         # df_inp = pd.DataFrame(self.config.items(), columns=['input', 'value'])
         # df_inp.style.set_properties(**{'text-align': 'left'})
-        # f.write(df_inp.__repr__())
+        # f.write(df_inp.to_string())
         # f.write(str(self.config))
         f.write('\n')
-
-
-
         sectors = ['N', 'NNE', 'NE',
                    'ENE', 'E', 'ESE', 'SE',
                    'SSE', 'S', 'SSW', 'SW', 'WSW',
@@ -299,7 +296,7 @@ class OutputFunc(MetFunc):
                 f.write(
                     'Instantaneous release: DILUTION FACTORS(s/m^3) per unit release for 6 stability categories at '
                     'various distances:\n')
-                f.write(df_dilution_factor.__repr__())
+                f.write(df_dilution_factor.to_string())
                 if self.config['pickle_it']:
                     df_dilution_factor.to_pickle('%s/dilution_factors_%s.p'% (self.config['logdir_name'], self.config['input_file_name']))
                 f.write('\n')
@@ -319,14 +316,14 @@ class OutputFunc(MetFunc):
                 ndx = np.array(dilution_factor_sectorwise_all_distances, dtype=object).argmax(axis=1)
                 max_by_stab_cat = [stab_cat_name[i] for i in ndx]
                 df_max_dilution_factor['Stability Category'] = max_by_stab_cat
-                f.write(df_max_dilution_factor.__repr__())
+                f.write(df_max_dilution_factor.to_string())
                 f.write('\n\n')
             if self.config['have_dilution_factor']:
                 max_dilution_factor = self.config['list_max_dilution_factor']
                 df_max_dilution_factor = pd.DataFrame(max_dilution_factor.items(),
                                                       columns=['Distance', 'Max Dilution Factor'])
                 df_max_dilution_factor = df_max_dilution_factor.set_index('Distance')
-                f.write(df_max_dilution_factor.__repr__())
+                f.write(df_max_dilution_factor.to_string())
                 f.write('\n\n')
 
         if self.config['long_term_release']:
@@ -342,7 +339,8 @@ class OutputFunc(MetFunc):
                         'Long-term release (Conservative approach): DILUTION FACTORS(s/m^3) per unit release for 6 '
                         'stability categories at various distances:\n')
 
-                    f.write(df_dilution_factor.__repr__())
+                    #f.write(df_dilution_factor.to_string())
+                    f.write(df_dilution_factor.to_string())
                     f.write('\n\n')
                     if self.config['pickle_it']:
                         df_dilution_factor.to_pickle('%s/dilution_factors_%s.p' % (self.config['logdir_name'], self.config['input_file_name']))
@@ -352,7 +350,7 @@ class OutputFunc(MetFunc):
                     ndx = np.array(dilution_factor_sectorwise_all_distances, dtype=object).argmax(axis=1)
                     max_by_stab_cat = [stab_cat_name[i] for i in ndx]
                     df_max_dilution_factor['Stability Category'] = max_by_stab_cat
-                    f.write(df_max_dilution_factor.__repr__())
+                    f.write(df_max_dilution_factor.to_string())
                     f.write('\n')
                     f.write('Due to unavailability of metereological data, as a conservative approach sector average'
                             'plume concentration corresponding for six stability categories are computed for wind '
@@ -369,7 +367,7 @@ class OutputFunc(MetFunc):
                     f.write('\n')
                     f.write('Long term release: DILUTION FACTORS(s/m^3) per unit release for 16 wind sectors at '
                             'various distances:\n')
-                    f.write(df_dilution_factor.__repr__())
+                    f.write(df_dilution_factor.to_string())
                     f.write('\n\n')
                     # pickle it
                     if self.config['pickle_it']:
@@ -389,7 +387,7 @@ class OutputFunc(MetFunc):
                     ndx = np.array(dilution_factor_sectorwise_all_distances, dtype=object).argmax(axis=1)
                     max_sector = [sectors[i] for i in ndx]
                     df_max_dilution_factor['Sector'] = max_sector
-                    f.write(df_max_dilution_factor.__repr__())
+                    f.write(df_max_dilution_factor.to_string())
                     f.write('\n\n')
 
             if self.config['have_dilution_factor']:
@@ -397,7 +395,7 @@ class OutputFunc(MetFunc):
                 df_max_dilution_factor = pd.DataFrame(max_dilution_factor.items(),
                                                       columns=['Distance', 'Max Dilution Factor'])
                 df_max_dilution_factor = df_max_dilution_factor.set_index('Distance')
-                f.write(df_max_dilution_factor.__repr__())
+                f.write(df_max_dilution_factor.to_string())
                 f.write('\n\n')
 
         if self.config['run_dose_computation']:
@@ -417,7 +415,7 @@ class OutputFunc(MetFunc):
             f.write('\n\n')
             f.write('Half life of radionuclides:')
             f.write('\n')
-            f.write(df_hl.__repr__())
+            f.write(df_hl.to_string())
             B = np.array(DCFs, dtype=object).T
             for ndx, A in enumerate(B):
                 df_dcf = pd.DataFrame(A.T, index=self.age_group,
@@ -428,7 +426,7 @@ class OutputFunc(MetFunc):
                     str(self.rads_list[ndx])))
                 f.write('\n')
 
-                f.write(df_dcf.__repr__())
+                f.write(df_dcf.to_string())
             f.write('\nNote (a): For ground-shine and submersion dose, progeny corrected DCF values are printed first '
                     'followed by uncorrected DCF values. If there is no progeny for consideration, value remains the same.')
             f.write(
@@ -469,7 +467,7 @@ class OutputFunc(MetFunc):
                     igsub = pd.DataFrame(each, dtype=float, index=['Inhalation', 'Ground-shine', 'Submersion'],
                                          columns=self.rads_list).T
                     igsub['total'] = igsub.loc[:, :].sum(axis=1)
-                    f.write(igsub.__repr__())
+                    f.write(igsub.to_string())
                     # pickle it
                     if self.config['pickle_it']:
                         igsub.to_pickle('%s/inh_gs_sub_doses_d_%s_age_%s_%s.p' % (self.config['logdir_name'], self.downwind_distances[dst], self.age_group[ag], self.config['input_file_name']))
@@ -505,7 +503,7 @@ class OutputFunc(MetFunc):
                     ings = pd.DataFrame(each.T, dtype=float, index=['Veg', 'Milk', 'Meat'], columns=self.rads_list).T
                     ings = self.zeroing_ingestion(ings, notransfer_factor_rad)
                     ings['total'] = ings.loc[:, :].sum(axis=1)
-                    f.write(ings.__repr__())
+                    f.write(ings.to_string())
                     # pickle it
                     if self.config['pickle_it']:
                         ings.to_pickle('%s/ings_d_%s_age_%s_%s.p' % (self.config['logdir_name'], self.downwind_distances[dst], self.age_group[ag], self.config['input_file_name']))
@@ -570,7 +568,7 @@ class OutputFunc(MetFunc):
                                                      index=self.rads_list,
                                                      columns=['A', 'B', 'C', 'D', 'E', 'F'])
                         f.write('\n\n')
-                        f.write(df_plume_dose.__repr__())
+                        f.write(df_plume_dose.to_string())
                         # pickle it
                         if self.config['pickle_it']:
                             df_plume_dose.to_pickle('%s/ings_d_%s_%s.p' % (self.config['logdir_name'],
@@ -597,7 +595,7 @@ class OutputFunc(MetFunc):
                         df_plume_dose['Maximum'] = df_plume_dose.loc[:, :].max(axis=1)
                         df_plume_dose['Maximum Sector'] = df_plume_dose.loc[:, :].idxmax(axis=1)
                         f.write('\n\n')
-                        f.write(df_plume_dose.__repr__())
+                        f.write(df_plume_dose.to_string())
                         # pickle it
                         if self.config['pickle_it']:
                             df_plume_dose.to_pickle('%s/ings_d_%s_%s.p' % (self.config['logdir_name'],
@@ -623,7 +621,7 @@ class OutputFunc(MetFunc):
                     f.write('Calculated total dose values (mSv) for age %s at specified plant boundary (%s metre)' % (
                         age, self.config['plant_boundary']))
                 f.write('\n\n')
-                f.write(df_all.__repr__())
+                f.write(df_all.to_string())
             f.write('\n\n')
         f.close()
         return
