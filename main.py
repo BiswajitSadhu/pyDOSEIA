@@ -73,12 +73,26 @@ def main():
     args = parse_arguments()
     # seed_torch(seed=int(args.seed))
     log_file_name = args.config_file.split('.yaml')[0]
-    logging.basicConfig(filename='%s_info.log' % log_file_name, level=logging.INFO, filemode="w+")
-    logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+
+    # Configure logging in the main script
+    logging.basicConfig(
+        filename=f'{log_file_name}_info.log',
+        level=logging.INFO,
+        filemode="w+",
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+
+    # Add a handler to log to stdout
+    stdout_handler = logging.StreamHandler(sys.stdout)
+    stdout_handler.setLevel(logging.INFO)
+    logging.getLogger().addHandler(stdout_handler)
+
+    # logging.basicConfig(filename='%s_info.log' % log_file_name, level=logging.INFO, filemode="w+")
+    # logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
     # logging.getLogger("main").info(f"cuda available: {torch.cuda.is_available()}")
     config = parse_config(args.config_file)
     # metfunc = MetFunc(config=config, device=args.device, logdir=args.logdir)
-    output_func = OutputFunc(config=config, device=args.device, logdir=args.logdir)
+    output_func = OutputFunc(config=config, device=args.device, log_file_name=log_file_name, logdir=args.logdir)
     # all_results = output_func.dose_calculation_script()
 
     if not config['run_dose_computation']:

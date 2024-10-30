@@ -62,7 +62,7 @@ class RaddcfFunc(DoseFunc):
         Raises:
             - ValueError: If required parameters are not provided or if conflicting configurations are set.
     """
-    def __init__(self, device, config, logdir=None):
+    def __init__(self, device, config, log_file_name, logdir=None):
         """
                 Initializes an OutputFunc object.
 
@@ -71,7 +71,7 @@ class RaddcfFunc(DoseFunc):
                     - config: Configuration parameters.
                     - logdir: Log directory (default is None).
         """
-        super().__init__(device, config, logdir=None)
+        super().__init__(device, config, log_file_name, logdir=None)
         self.effective_lambda_of_rads = None
         self._device = device
         self.config = config
@@ -862,7 +862,6 @@ class RaddcfFunc(DoseFunc):
         else:
             xin_lim = 1
         '''
-        print('DONEE')
         xin_lim = 0
         xf_lim = X1 + (5 * MFP)
         logging.getLogger("Spatial Limits for Plume Dose Calculation").info(

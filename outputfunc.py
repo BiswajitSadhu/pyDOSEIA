@@ -11,9 +11,6 @@ import itertools
 import _pickle as cPickle
 os.getcwd()
 
-
-# metfunc = MetFunc(config=config, device=args.device, logdir=args.logdir)
-
 class OutputFunc(MetFunc):
     """
         Represents a class for generating output.
@@ -63,8 +60,25 @@ class OutputFunc(MetFunc):
         Raises:
             - ValueError: If required parameters are not provided or if conflicting configurations are set.
     """
-    def __init__(self, device, config, logdir=None):
-        super().__init__(device, config, logdir=None)
+    def __init__(self, device, config, log_file_name, logdir=None):
+        super().__init__(device, config, log_file_name, logdir=None)
+
+        # Configure logger with the provided log_file_name
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.INFO)
+
+        # Console handler
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+        self.logger.addHandler(console_handler)
+
+        # File handler with dynamic file name
+        file_handler = logging.FileHandler(log_file_name)
+        file_handler.setLevel(logging.INFO)
+        file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+        self.logger.addHandler(file_handler)
+
+
         self.max_dil_fac_all_dist = None
         self.operation_hours_per_day = None
         self._device = device
@@ -151,7 +165,8 @@ class OutputFunc(MetFunc):
             if not self.age_group:
                 raise ValueError("Please provide the list of age for which dose needs to be calculated.")
 
-        logging.getLogger("main").info("input description:: \n{input_desc}".format(input_desc=self.config))
+        # logging.getLogger("main").info("input description:: \n{input_desc}".format(input_desc=self.config))
+        self.logger.info("input description:: \n{input_desc}".format(input_desc=self.config))
 
     def output_to_txt(self, dilution_factor_sectorwise_all_distances, filename, DCFs=None,
                       DOSES=None, INGESTION_DOSES=None, PLUME_DOSES=None):
@@ -403,7 +418,6 @@ class OutputFunc(MetFunc):
             f.write('Half life of radionuclides:')
             f.write('\n')
             f.write(df_hl.__repr__())
-            print('DCFSSSSS:', DCFs)
             B = np.array(DCFs, dtype=object).T
             for ndx, A in enumerate(B):
                 df_dcf = pd.DataFrame(A.T, index=self.age_group,
@@ -630,7 +644,7 @@ class OutputFunc(MetFunc):
 
         """
         DCFs = []
-        logging.getLogger("DCF extraction:").info(
+        self.logger.info(
             "Age: {age} \n\n".format(age=age))
         # inhalation
         list_dcf_inhalation = self.inhalation_dcf_list(master_file="library/RadioToxicityMaster.xls",
@@ -667,7 +681,7 @@ class OutputFunc(MetFunc):
 
         """
         DOSES_AGEWISE = []
-        logging.getLogger("Dose calculation:").info(
+        self.logger.info(
             "Age: {age}, Distance: {dist}\n\n".format(age=age, dist=X1))
         max_chi_by_q = self.max_dil_fac_all_dist.loc[str(X1)][0]
         # inhalation
@@ -998,7 +1012,7 @@ class OutputFunc(MetFunc):
                 DOSES_AGEWISE = []
                 INGESTION_DOSES_AGEWISE = []
                 for age in self.age_group:
-                    logging.getLogger("Dose calculation:").info(
+                    self.logger.info(
                         "Age: {age}, Distance: {dist}\n\n".format(age=age, dist=X1))
                     # inhalation
                     list_dcf_inhalation = self.inhalation_dcf_list(master_file="library/RadioToxicityMaster.xls",

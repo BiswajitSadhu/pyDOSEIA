@@ -60,7 +60,7 @@ class DoseFunc:
         - ValueError: If required parameters are not provided or if conflicting configurations are set.
     """
 
-    def __init__(self, device, config, logdir=None):
+    def __init__(self, device, config, log_file_name, logdir=None):
         super().__init__()
         self.effective_lambda_of_rads = None
         self._device = device
@@ -310,8 +310,9 @@ class DoseFunc:
                 # convert dose to year
                 gs_dose = gs_dose * (365 * 24 * 3600)
                 logging.getLogger("Ground shine Dose").info(
-                    'DCF used for radionuclide {} is {} Sv-m^2/Bq-second:'.format(self.rads_list[bdx],
+                    'DCF used for radionuclide {} is {} Sv-m^2/Bq-second [progeny corrected (if required), uncorrected]:'.format(self.rads_list[bdx],
                                                                                           dcf))
+                print("Ground shine Dose: DCF used for radionuclide {} is {} Sv-m^2/Bq-second:".format(self.rads_list[bdx],dcf))
                 print('Deposition rate for radionuclide {} is {} Bq/m2-second'.format(self.rads_list[bdx],
                                                                                       deposition_rate))
                 print('Concentration of radionuclide {} on the ground is {} Bq/m^2:'.format(self.rads_list[bdx],
@@ -338,14 +339,17 @@ class DoseFunc:
                 # convert dose to year
                 gs_dose = gs_dose * (365 * 24 * 3600)
                 logging.getLogger("Ground shine Dose").info(
-                    'DCF used for radionuclide {} is {} Sv-m^2/Bq-second:'.format(self.rads_list[bdx],
-                                                                                          dcf))
+                    'DCF used for radionuclide {} is {} Sv-m^2/Bq-second [progeny uncorrected values]:'.format(self.rads_list[bdx],
+                                                                                          dcf[0]))
                 logging.getLogger("Ground shine Dose").info(
                     'Deposition rate for radionuclide {} is {} Bq/m2-second'.format(self.rads_list[bdx],
                                                                                       deposition_rate))
                 logging.getLogger("Ground shine Dose").info(
                     'Concentration of radionuclide {} on the ground is {} Bq/m^2:'.format(self.rads_list[bdx],
                                                                                             conc_rad_ground))
+
+                print("Ground shine Dose: DCF used for radionuclide {} is {} Sv-m^2/Bq-second:".format(
+                    self.rads_list[bdx], dcf))
                 print('Deposition rate for radionuclide {} is {} Bq/m^2-second'.format(self.rads_list[bdx],
                                                                                       deposition_rate))
                 print('Concentration of radionuclide {} on the ground is {} Bq/m^2:'.format(self.rads_list[bdx],
@@ -405,6 +409,8 @@ class DoseFunc:
                 logging.getLogger("Submersion Dose").info(
                     'DCF used for radionuclide {} is {} Sv-m3/Bq-s:'.format(self.rads_list[bdx],
                                                                                           dcf))
+                print("Submersion Dose: DCF used for radionuclide {} is {} Sv-m3/Bq-second [progeny corrected (if required), uncorrected]:".format(
+                    self.rads_list[bdx], dcf))
 
                 if self.config['single_plume']:
                     # converting DCF /sec to /year; for single plume do not convert dcf unit to year
@@ -424,8 +430,10 @@ class DoseFunc:
             # take uncorrected DCF
             for bdx, (discharge_rad, dcf) in enumerate(zip(discharge_q, dcfs)):
                 logging.getLogger("Submersion Dose").info(
-                    'DCF used for radionuclide {} is {} Sv-m3/Bq-s:'.format(self.rads_list[bdx],
-                                                                                          dcf))
+                    'DCF used for radionuclide {} is {} Sv-m3/Bq-s [progeny not considered]:'.format(self.rads_list[bdx],
+                                                                                          dcf[0]))
+                print("Submersion Dose: DCF used for radionuclide {} is {} Sv-m3/Bq-second:".format(
+                    self.rads_list[bdx], dcf))
                 if self.config['single_plume']:
                     # converting DCF /sec to /year; for single plume do not convert dcf unit to year
                     # bq-s/m3 * sv/s * m3/bq
@@ -545,7 +553,7 @@ class DoseFunc:
         # vegetation owing to direct contamination; unit # Bq/m2/d
         deposition_rate_per_day = [d * list_deposition_vel[idx] * max_dilutfac_for_distance_secperm3 for idx, d in
                                    enumerate(day_discharge_bq_rad_list)]
-        print('deposition_rate_per_day:', deposition_rate_per_day)
+        print('deposition_rate_per_day for the given list of radionclides:', deposition_rate_per_day)
 
         # GET DECAY CONSTANT; unit /second
         if self.lambda_of_rads is None:
@@ -1016,7 +1024,7 @@ class DoseFunc:
                 dose_milk = Cmi_list[ndx] * dcfs[ndx] * DID_milk * float(1000)
                 # dose due to consumption of meat #mSv/year
                 dose_meat = Cfi_list[ndx] * dcfs[ndx] * DID_meat * float(1000)
-                print('ings:', dose_veg, dose_milk, dose_meat)
+                # print('ings:', dose_veg, dose_milk, dose_meat)
                 ingestion_dose.append((dose_veg, dose_milk, dose_meat))
 
             # self.ingestion_dose_vals = np.array(ingestion_dose)
@@ -1277,7 +1285,6 @@ class DoseFunc:
                             delayed(adgq_single_plume)(ndx, energy, limit_list_per_energy, k_mu_mua_MFP_dict) for
                             ndx, _ in
                             enumerate(range(6)))
-                        print('results:,', results)
                     integral_stab_cat_energy_wise.append(list(results))
                 all_integral_stab_cat_energy_wise.append(integral_stab_cat_energy_wise)
             return all_integral_stab_cat_energy_wise

@@ -57,8 +57,8 @@ class MetFunc(RaddcfFunc):
         - ValueError: If required parameters are not provided or if conflicting configurations are set.
     """
     # def __init__(self):
-    def __init__(self, device, config, logdir=None):
-        super().__init__(device, config, logdir=None)
+    def __init__(self, device, config, log_file_name, logdir=None):
+        super().__init__(device, config, log_file_name, logdir=None)
         """
             Initializes an MetFunc object.
 

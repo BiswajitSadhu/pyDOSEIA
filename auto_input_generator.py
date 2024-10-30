@@ -5,6 +5,7 @@ from colorama import init, Fore, Back, Style
 import pandas as pd
 from auto_input_generator_funcs_class import *
 import subprocess
+import random
 
 # must have xlrd>=2.0.1 to read excel file
 init()
@@ -350,6 +351,60 @@ if __name__ == "__main__":
     print("_________________________________________________________________________________")
     print("That's all we needed. Now sit back and relax while we perform the computation :).")
 
-    subprocess.call("python main.py --config_file %s/%s.yaml --output_file_name %s/%s --logdir %s" % (
-        input_dict['logdir_name'], input_file_name, input_dict['logdir_name'], input_dict['output_file_name'],
-        input_dict['logdir_name']), shell=True)
+    # Specify the log file path
+    log_file_path = f"{input_dict['logdir_name']}/{input_dict['output_file_name']}.log"
+
+    # Open the file in write mode and pass it to subprocess
+    with open(log_file_path, "w") as log_file:
+        subprocess.call(
+            "python main.py --config_file %s/%s.yaml --output_file_name %s/%s --logdir %s" % (
+                input_dict['logdir_name'],
+                input_file_name,
+                input_dict['logdir_name'],
+                input_dict['output_file_name'],
+                input_dict['logdir_name']
+            ),
+            shell=True,
+            stdout=log_file,  # Redirect standard output to the file
+            stderr=log_file  # Redirect standard error to the file
+        )
+
+    #subprocess.call("python main.py --config_file %s/%s.yaml --output_file_name %s/%s --logdir %s" % (
+    #    input_dict['logdir_name'], input_file_name, input_dict['logdir_name'], input_dict['output_file_name'],
+    #    input_dict['logdir_name']), shell=True)
+    # Print completion message and quote on the screen
+    print("\nCalculation finished successfully!")
+
+    # Expanded list of inspiring quotes from Vedic literature
+    vedic_quotes = [
+        "Tat Tvam Asi (तत्त्वमसि) - Thou art that. - Chandogya Upanishad",
+        "Aham Brahmasmi (अहं ब्रह्मास्मि) - I am Brahman. - Brihadaranyaka Upanishad",
+        "Atman is Brahman. The self and the cosmic are one. - Advaita Vedanta",
+        "Satyam eva jayate - Truth alone triumphs. - Mundaka Upanishad",
+        "All that we are is the result of what we have thought. - Buddha",
+        "He who sees all beings in his own self, and his own self in all beings, loses all fear. - Isa Upanishad",
+        "There is no joy in the finite; there is joy only in the Infinite. - Chandogya Upanishad",
+        "From the unreal, lead me to the real. From darkness, lead me to light. From death, lead me to immortality. - Brihadaranyaka Upanishad",
+        "The self is not the body; the self is eternal, indestructible, and infinite. - Bhagavad Gita",
+        "One who sees all beings as the Self and the Self in all beings has no hatred for any. - Isa Upanishad",
+        "As the rivers flowing east and west merge in the sea and become one, so do all beings merge into the One. - Chandogya Upanishad",
+        "He who knows himself to be the atman of all beings and all beings in the atman, hates none. - Isa Upanishad",
+        "Where there is duality, there one sees another; but where everything has become one's own self, then who shall see whom? - Brihadaranyaka Upanishad",
+        "Let your mind be clear and calm, like a serene lake. - Vedic Wisdom",
+        "Be steadfast in performing your duty, O Arjuna, abandon attachment and remain balanced in success and failure. - Bhagavad Gita, Chapter 2, Verse 47",
+        "The enlightened sees that Brahman is actionless and eternal, beyond good and evil. - Bhagavad Gita",
+        "Knowing oneself to be Brahman, and seeing the self in all beings, one attains supreme peace. - Upanishadic Thought",
+        "The wise see the same in all, be it a scholar, an outcast, an animal, or a sage. - Bhagavad Gita, Chapter 5, Verse 18",
+        "Meditation brings wisdom; lack of meditation leaves ignorance. Know well what leads you forward and what holds you back. - Buddha",
+        "Yoga is the journey of the self, through the self, to the self. - Bhagavad Gita",
+        "The mind is restless, turbulent, powerful, and obstinate. It is like controlling the wind. - Bhagavad Gita, Chapter 6, Verse 34",
+        "One who has control over the mind is tranquil in heat and cold, in pleasure and pain, and in honor and dishonor. - Bhagavad Gita, Chapter 6, Verse 7",
+        "All creation is Brahman; and the universe is its play. - Upanishadic Thought",
+        "The seeker of the Self should keep the mind calm, like the flame of a lamp in a windless place. - Bhagavad Gita, Chapter 6, Verse 19",
+        "Look within. Be still. Free from fear and attachment, know the sweet joy of the way. - Dhammapada",
+        "By pure thought, the wise man attains the supreme goal. - Vedic Wisdom"
+    ]
+
+
+    print("Vedas teach us:")
+    print(random.choice(vedic_quotes))
