@@ -353,7 +353,7 @@ if __name__ == "__main__":
 
     # Specify the log file path
     log_file_path = f"{input_dict['logdir_name']}/{input_dict['output_file_name']}.log"
-
+    '''
     # Open the file in write mode and pass it to subprocess
     with open(log_file_path, "w") as log_file:
         subprocess.call(
@@ -374,6 +374,30 @@ if __name__ == "__main__":
     #    input_dict['logdir_name']), shell=True)
     # Print completion message and quote on the screen
     print("\nCalculation finished successfully!")
+
+    '''
+    # Run the subprocess and capture output and errors
+    command = (
+        f"python main.py --config_file {input_dict['logdir_name']}/{input_file_name}.yaml "
+        f"--output_file_name {input_dict['logdir_name']}/{input_dict['output_file_name']} "
+        f"--logdir {input_dict['logdir_name']}"
+    )
+
+    # Execute the command and capture output
+    result = subprocess.run(command, shell=True, capture_output=True, text=True)
+
+    # Write output and error to the log file
+    with open(log_file_path, "w") as log_file:
+        log_file.write(result.stdout)
+        log_file.write(result.stderr)
+
+    # Check if the subprocess finished successfully
+    if result.returncode == 0:
+        print("\nCalculation finished successfully!")
+    else:
+        print("\nAn error occurred during the calculation. Please check the log file for more details.")
+        print("Error details:\n", result.stderr)
+        
 
     # Expanded list of inspiring quotes from Vedic literature
     vedic_quotes = [

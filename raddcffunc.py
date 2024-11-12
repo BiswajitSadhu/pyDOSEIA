@@ -418,16 +418,101 @@ class RaddcfFunc(DoseFunc):
         if consider_progeny:
             self.dcfs_gs_corr = np.array(dcf_corr_list)
             self.dcfs_gs = np.array(dcfs)
-            stacked = np.vstack((self.dcfs_gs_corr, self.dcfs_gs))
-            A = stacked[:, 0]
-            B = stacked[:, 1]
-            return A, B
+
+            print('self.dcfs_gs_corr:', self.dcfs_gs_corr, flush=True)
+            print('self.dcfs_gs:', self.dcfs_gs, flush=True)
+            #print('stacked:', stacked)
+            if len(self.dcfs_gs_corr) and len(self.dcfs_gs) > 1:
+                stacked = np.vstack((self.dcfs_gs_corr, self.dcfs_gs))
+                data_as_tuples = [tuple(inner_list) for inner_list in stacked.T]
+
+                A = stacked[:, 0]
+                B = stacked[:, 1]
+                return data_as_tuples
+            else:
+                stacked = [self.dcfs_gs_corr[0], self.dcfs_gs[0]]
+                print('stacked', stacked)
+                return [stacked]
+            #return self.dcfs_gs_corr,  self.dcfs_gs
         else:
             self.dcfs_gs = np.array(dcfs)
-            stacked = np.vstack((self.dcfs_gs, self.dcfs_gs))
-            A = stacked[:, 0]
-            B = stacked[:, 1]
-            return A, B
+            if len(self.dcfs_gs) > 1:
+
+                stacked = np.vstack((self.dcfs_gs, self.dcfs_gs))
+                data_as_tuples = [tuple(inner_list) for inner_list in stacked.T]
+                A = stacked[:, 0]
+                B = stacked[:, 1]
+                return data_as_tuples
+            else:
+                stacked = [self.dcfs_gs[0], self.dcfs_gs[0]]
+                return [stacked]
+
+    def reshape_dcfs_with_tritium(self, DCFs_t):
+        # Prepare the data to be flattened and structured
+        reshaped_dcfs_wd_tritium = []
+        index_labels = [1, 18]  # Example index labels
+        for i, group in enumerate(DCFs_t):
+            for entry in group:
+                inhalation = entry[0][0]  # Extract scalar from array
+                ground_shine = entry[1][0]  # Access the first element in each list pair
+                submersion = entry[2][0]  # Access the first element in each list pair
+                ingestion = entry[3].tolist()  # Convert array to list for ingestion values
+
+                # Append a row of flattened data to the data list
+                reshaped_dcfs_wd_tritium.append([inhalation, ground_shine, submersion, ingestion])
+        return reshaped_dcfs_wd_tritium
+
+    import numpy as np
+
+    def reshape_and_pad_dcf(self, DCFs):
+        """
+        Reshapes and pads the nested list `DCFs` to a consistent shape [m, 4, n],
+        where `n` is the maximum length of any innermost list.
+
+        Parameters:
+        DCFs (list): Nested list structure to be reshaped and padded.
+
+        Returns:
+        np.array: A NumPy array with shape [m, 4, n].
+        """
+        # Step 1: Find the maximum length of the innermost lists (n)
+        max_n = max(
+            max(len(item) if isinstance(item, list) else 1 for item in sublist)
+            for outer in DCFs for sublist in outer
+        )
+
+        # Step 2: Pad the innermost lists to match the `max_n` dimension
+        padded_DCFs = []
+        for outer in DCFs:
+            padded_outer = []
+            for sublist in outer:
+                padded_sublist = []
+                for item in sublist:
+                    # If the item is a list, pad it to `max_n`
+                    if isinstance(item, list):
+                        padded_item = item + [0] * (max_n - len(item))
+                    else:
+                        padded_item = [item] + [0] * (max_n - 1)  # If not a list, pad it as a list
+                    padded_sublist.append(padded_item)
+                padded_outer.append(padded_sublist)
+            padded_DCFs.append(padded_outer)
+
+        # Step 3: Convert to a numpy array
+        # Ensure all nested lists have homogeneous dimensions for array conversion
+        try:
+            array_DCFs = np.array(padded_DCFs, dtype=object)
+        except ValueError as e:
+            print(f"Error: {e}")
+            return None
+
+        return array_DCFs
+
+    # Example usage:
+    #array_DCFs = reshape_and_pad_dcf(DCFs)
+
+    # Print the final array and its shape
+    #print(array_DCFs)
+    #print("Shape:", array_DCFs.shape)
 
     def find_progeny_name_and_yield_f(self, rad, master_file="library/dcf_corr.xlsx"):
         """
@@ -632,18 +717,36 @@ class RaddcfFunc(DoseFunc):
 
         if consider_progeny:
             self.dcf_list_submersion_corr = np.array(dcf_corr_list)
+            print('self.dcf_list_submersion_corr:', self.dcf_list_submersion_corr)
+
             self.dcf_list_submersion = np.array(dcfs)
-            # the output becomes rad specific (corrected, uncorrected DCF)
-            stacked = np.vstack((self.dcf_list_submersion_corr, self.dcf_list_submersion))
-            A = stacked[:, 0]
-            B = stacked[:, 1]
-            return A, B
+            print('self.dcf_list_submersion:', self.dcf_list_submersion)
+            if len(self.dcf_list_submersion_corr) > 1 and len(self.dcf_list_submersion) > 1:
+                # the output becomes rad specific (corrected, uncorrected DCF)
+                stacked = np.vstack((self.dcf_list_submersion_corr, self.dcf_list_submersion))
+                data_as_tuples = [tuple(inner_list) for inner_list in stacked.T]
+                A = stacked[:, 0]
+                B = stacked[:, 1]
+                print('A:', A)
+                print('B', B)
+                return data_as_tuples
+            else:
+                stacked = [self.dcf_list_submersion_corr[0],
+                           self.dcf_list_submersion[0]]
+                return [stacked]
+
         else:
             self.dcf_list_submersion = np.array(dcfs)
-            stacked = np.vstack((self.dcf_list_submersion, self.dcf_list_submersion))
-            A = stacked[:, 0]
-            B = stacked[:, 1]
-            return A, B
+            if len(self.dcf_list_submersion) > 1:
+                stacked = np.vstack((self.dcf_list_submersion, self.dcf_list_submersion))
+                data_as_tuples = [tuple(inner_list) for inner_list in stacked.T]
+                A = stacked[:, 0]
+                B = stacked[:, 1]
+                return data_as_tuples
+            else:
+                stacked = [self.dcf_list_submersion[0],
+                           self.dcf_list_submersion[0]]
+                return [stacked]
 
     def dcf_list_ingestion(self, master_file="library/Dose_ecerman_final.xlsx", sheet_name="ingestion_gsr3", age=18):
         """
@@ -669,7 +772,6 @@ class RaddcfFunc(DoseFunc):
         name = pd.read_excel(xls, sheet_name)
         name.dropna(axis=0, how='all', inplace=True)
         dcfs = []
-
         for rad in self.rads_list:
             if rad != 'H-3':
                 search_string = '|'.join([rad])
@@ -710,6 +812,7 @@ class RaddcfFunc(DoseFunc):
                         raise ValueError('The age of recipient must be a number.')
                     dcfs_tritium.append(dcf)
                 dcfs.append(dcfs_tritium)
+
         self.dcfs_ingestion = np.array(dcfs, dtype=object)
 
         return self.dcfs_ingestion
@@ -1471,6 +1574,9 @@ def point_source_dose(gamma_energy=None, g_yield=None, activity_curie=1e06, dist
         raise ValueError("The unit is not recognized. Must be either 'mSv/hr' or 'mR/hr'. ")
 
     return dose_dict
+
+
+
 
 
 

@@ -233,6 +233,7 @@ class DoseFunc:
                 total_inhalation_dose_tritium += inhalation_dose
                 inhal_dose_per_rad.append(total_inhalation_dose_tritium)
                 tot_inhalation_dose += total_inhalation_dose_tritium
+
         return inhal_dose_per_rad
 
     def ground_shine_dose(self, X1, age=1, max_dilutfac_for_distance_secperm3=None):
@@ -268,6 +269,7 @@ class DoseFunc:
                                                                   age=age,
                                                                   consider_progeny=self.config['consider_progeny'])
 
+        # print('dcfsssssssssssssssssss:', dcfs)
         # deposition velocities of all radionuclides ; see IAEA SRS 19 (page 27)
         list_deposition_vel = self.deposition_velocity_of_rad()
 
@@ -808,7 +810,7 @@ class DoseFunc:
                 raise ValueError('For ingestion dose calculation, the receiver can be either adult or infant.')
 
         # THE CURIOUS CASE OF TRITIUM ##################################################################################
-        # concetraion of tritium in terrestrial plant products
+        # concentration of tritium in terrestrial plant products
         def conc_tritium_in_terrestrial_plant(max_dilution_factor, C_HTO_atm, climate='Continental',
                                               veg_type='leafy_vegetables',
                                               CR_s=0.23, gamma=0.909, R_p=0.54):
@@ -1028,14 +1030,18 @@ class DoseFunc:
                 ingestion_dose.append((dose_veg, dose_milk, dose_meat))
 
             # self.ingestion_dose_vals = np.array(ingestion_dose)
-
+            print('dcfs_ing:', dcfs)
             if each == 'H-3':
                 logging.getLogger("NOTE: Ingestion").info(
                     "Tritium (H-3) in user-defined radionuclide list:: \n{input_desc}".format(
                         input_desc=self.rads_list))
-
-                dcf_hto = [_ for _ in dcfs if isinstance(_, list)][0][0]
-                dcf_obt = [_ for _ in dcfs if isinstance(_, list)][0][1]
+                print('dcfs:', dcfs, list(dcfs))
+                if each == 'H-3' and len(self.rads_list) == 1:
+                    dcf_hto = dcfs[0][0]
+                    dcf_obt = dcfs[0][1]
+                else:
+                    dcf_hto = [_ for _ in list(dcfs) if isinstance(_, list)][0][0]
+                    dcf_obt = [_ for _ in list(dcfs) if isinstance(_, list)][0][1]
                 if self.config['long_term_release']:
                     atm_discharge_HTO = [self.config['annual_discharge_bq_rad_list'][ndx] for ndx, _ in
                                          enumerate(self.rads_list) if _ == 'H-3'][0]
@@ -1275,13 +1281,13 @@ class DoseFunc:
                     # range(6) is range(total_stab_cat)
                     # long term release
                     if self.config['long_term_release']:
-                        results = Parallel(n_jobs=n_jobs, verbose=100, return_as="generator")(
+                        results = Parallel(n_jobs=n_jobs, verbose=100)(
                             delayed(adgq_sector_average)(ndx, energy, limit_list_per_energy, k_mu_mua_MFP_dict) for
                             ndx, _ in
                             enumerate(range(6)))
                     # single plume release
                     if self.config['single_plume']:
-                        results = Parallel(n_jobs=n_jobs, verbose=100, return_as="generator")(
+                        results = Parallel(n_jobs=n_jobs, verbose=100)(
                             delayed(adgq_single_plume)(ndx, energy, limit_list_per_energy, k_mu_mua_MFP_dict) for
                             ndx, _ in
                             enumerate(range(6)))

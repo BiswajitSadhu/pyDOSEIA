@@ -416,17 +416,58 @@ class OutputFunc(MetFunc):
             f.write('Half life of radionuclides:')
             f.write('\n')
             f.write(df_hl.to_string())
-            B = np.array(DCFs, dtype=object).T
-            for ndx, A in enumerate(B):
-                df_dcf = pd.DataFrame(A.T, index=self.age_group,
-                                      columns=['Inhalation (Sv/Bq)', 'Ground-shine (Sv-m^2/Bq-second)',
-                                               'Submersion (Sv-m^3/Bq-second)', 'Ingestion (Sv/Bq)'])
-                f.write('\n\n')
+
+            # TRITIUM DOSE coeffecients
+            #if 'H-3'
+            '''
+            if 'H-3' in str(self.rads_list):
                 f.write('Dose Conversion Factors used in the dose computations for radionuclide %s \n' % (
                     str(self.rads_list[ndx])))
-                f.write('\n')
+                df_dcf = pd.DataFrame(DCFs,
+                            index=self.age_group,
+                            columns=['Inhalation (Sv/Bq)', 'Ground-shine (Sv-m^2/Bq-second)',
+                            'Submersion (Sv-m^3/Bq-second)', 'Ingestion (Sv/Bq)']
+                            )
 
                 f.write(df_dcf.to_string())
+                f.write('\n\n')
+            else:
+                B = np.array(DCFs, dtype=object).T
+                for ndx, A in enumerate(B):
+                    print('rads:::', str(self.rads_list[ndx]))
+                    df_dcf = pd.DataFrame(A.T, index=self.age_group,
+                                          columns=['Inhalation (Sv/Bq)', 'Ground-shine (Sv-m^2/Bq-second)',
+                                                   'Submersion (Sv-m^3/Bq-second)', 'Ingestion (Sv/Bq)'])
+                    f.write('\n\n')
+                    f.write('Dose Conversion Factors used in the dose computations for radionuclide %s \n' % (
+                        str(self.rads_list[ndx])))
+                    f.write('\n')
+                    f.write(df_dcf.to_string())
+            
+            '''
+            B = np.array(DCFs, dtype=object).T
+            for ndx, A in enumerate(B):
+                if str(self.rads_list) == 'H-3':
+                    f.write('Dose Conversion Factors used in the dose computations for radionuclide %s \n' % (
+                        str(self.rads_list[ndx])))
+                    df_dcf = pd.DataFrame(DCFs,
+                                          index=self.age_group,
+                                          columns=['Inhalation (Sv/Bq)', 'Ground-shine (Sv-m^2/Bq-second)',
+                                                   'Submersion (Sv-m^3/Bq-second)', 'Ingestion (Sv/Bq)']
+                                          )
+
+                    f.write(df_dcf.to_string())
+                    f.write('\n\n')
+                else:
+                    df_dcf = pd.DataFrame(A.T, index=self.age_group,
+                                          columns=['Inhalation (Sv/Bq)', 'Ground-shine (Sv-m^2/Bq-second)',
+                                                   'Submersion (Sv-m^3/Bq-second)', 'Ingestion (Sv/Bq)'])
+                    f.write('\n\n')
+                    f.write('Dose Conversion Factors used in the dose computations for radionuclide %s \n' % (
+                        str(self.rads_list[ndx])))
+                    f.write('\n')
+                    f.write(df_dcf.to_string())
+
             f.write('\nNote (a): For ground-shine and submersion dose, progeny corrected DCF values are printed first '
                     'followed by uncorrected DCF values. If there is no progeny for consideration, value remains the same.')
             f.write(
@@ -467,6 +508,7 @@ class OutputFunc(MetFunc):
                     igsub = pd.DataFrame(each, dtype=float, index=['Inhalation', 'Ground-shine', 'Submersion'],
                                          columns=self.rads_list).T
                     igsub['total'] = igsub.loc[:, :].sum(axis=1)
+                    print('igsub:', igsub)
                     f.write(igsub.to_string())
                     # pickle it
                     if self.config['pickle_it']:
@@ -588,7 +630,13 @@ class OutputFunc(MetFunc):
                     for ndx, each in enumerate(PLUME_DOSES):
                         f.write('\n\n')
                         f.write('Downwind Distance: {} metre'.format(self.downwind_distances[ndx]))
-                        each = np.array(each).sum(axis=0)
+                        each = np.array(each, dtype=object).sum(axis=0)
+                        # Flatten each array to make it 1D
+                        each_flat = [x.ravel() for x in each]
+                        # Concatenate into a single array
+                        each_concat = np.concatenate(each_flat)
+                        # Reshape to (2, 16)
+                        each = each_concat.reshape(-1, 16)
                         df_plume_dose = pd.DataFrame(each.reshape(len(self.rads_list), 16), dtype=float,
                                                      index=self.rads_list,
                                                      columns=sectors)
@@ -681,7 +729,7 @@ class OutputFunc(MetFunc):
         DOSES_AGEWISE = []
         self.logger.info(
             "Age: {age}, Distance: {dist}\n\n".format(age=age, dist=X1))
-        max_chi_by_q = self.max_dil_fac_all_dist.loc[str(X1)][0]
+        max_chi_by_q = self.max_dil_fac_all_dist.loc[str(X1)].iloc[0]
         # inhalation
         inhalation_dose_values = self.inhalation_dose(X1, age=age, max_dilutfac_for_distance_secperm3=max_chi_by_q)
         inhalation_dose_values = np.array(inhalation_dose_values).flatten()
@@ -711,7 +759,7 @@ class OutputFunc(MetFunc):
                 It uses the maximum dilution factor for the distance to compute the dose.
 
         """
-        max_chi_by_q = self.max_dil_fac_all_dist.loc[str(X1)][0]
+        max_chi_by_q = self.max_dil_fac_all_dist.loc[str(X1)].iloc[0]
         INGESTION_DOSES_AGEWISE = []
         if age > 17:
             ingestion_dose_values = self.ingestion_dose(X1, receiver='adult', max_dilutfac_for_distance_secperm3=max_chi_by_q)
@@ -942,8 +990,22 @@ class OutputFunc(MetFunc):
         self.max_dil_fac_all_dist = self.get_max_dilution_factor(dilution_factor_sectorwise_all_distances)
         if self.config['run_dose_computation']:
             DCFs = self.parallel_allage_dcfs_inh_gs_submersion()
-            DCFs = np.array(DCFs, dtype=object).reshape(len(self.age_group), 4, len(self.rads_list))
+            print('DCFs:', DCFs)
+            #if 'H-3' in self.rads_list:
+            #    print('tritium in input!!')
+            #    DCFs = self.reshape_dcfs_with_tritium(DCFs)
+            #else:
+            #    DCFs = np.array(DCFs, dtype=object).reshape(len(self.age_group), 4, len(self.rads_list))
+            if len(self.rads_list) == 1 and 'H-3' in self.rads_list:
+                DCFs = self.reshape_and_pad_dcf(DCFs)
+                DCFs = np.array(DCFs, dtype=object).reshape(len(self.age_group), 4, len(self.rads_list))
+
+            else:
+                print('DCFs:', DCFs)
+                DCFs = np.array(DCFs, dtype=object).reshape(len(self.age_group), 4, len(self.rads_list))
+
             DOSES = self.parallel_allage_dose_inh_gs_submersion()
+            print('DOSES:', DOSES)
             DOSES = np.array(DOSES, dtype=object).reshape(len(self.downwind_distances), len(self.age_group), 3, len(self.rads_list))
             INGESTION_DOSES = self.parallel_allage_dose_ingestion()
             INGESTION_DOSES = np.array(INGESTION_DOSES, dtype=object).reshape(len(self.downwind_distances), len(self.age_group), len(self.rads_list), 3)
