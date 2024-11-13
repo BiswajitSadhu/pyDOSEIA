@@ -159,7 +159,7 @@ class InpGenFunc:
             try:
                 release_height = ast.literal_eval(
                     input(color + "Provide release height of the plume (in metre) (e.g. 10): \n"))
-                if isinstance(release_height,int) or isinstance(release_height,float):
+                if isinstance(release_height, int) or isinstance(release_height, float):
                     print("release_height of the plume {} metre.".format(release_height))
                     self.input_dict['release_height'] = release_height
                     if release_height < 10:
@@ -289,7 +289,8 @@ class InpGenFunc:
                 if type(ast.literal_eval(measurement_height)) == int and ast.literal_eval(measurement_height) >= 10:
                     measurement_height = ast.literal_eval(measurement_height)
                     print(
-                        "measurement height at which metereological data is measured is {} metre".format(measurement_height))
+                        "measurement height at which metereological data is measured is {} metre".format(
+                            measurement_height))
                     self.input_dict['measurement_height'] = measurement_height
 
                 else:
@@ -912,7 +913,7 @@ class InpGenFunc:
         age_group = None
         while age_group is None or type(age_group) != list or len(
                 [each for each in age_group if type(each) == int]) != len(
-                age_group):
+            age_group):
             try:
                 age_group = ast.literal_eval(input(color + "Provide the list of ages for dose computation "
                                                            "(e.g. [1,18]; 1 for infant and 18 for adult): \n"))
@@ -955,7 +956,7 @@ class InpGenFunc:
                     print("input must be either 'Y' or 'N'")
         else:
             pass
-        return self.input_dict['have_met_data'] , self.input_dict
+        return self.input_dict['have_met_data'], self.input_dict
 
     def get_have_met_data(self, have_dilution_factor, release_scenario):
         if release_scenario == 1 or release_scenario == 2:
@@ -1141,6 +1142,35 @@ class InpGenFunc:
                 print("desired file name format incorrect.")
         return input_file_name, file_exists, self.input_dict
 
+    def check_existing_input_entries(self):
+        filename = self.input_dict['input_file_name']
+        logdir_name = self.input_dict['logdir_name']
+
+        with open(f'{logdir_name}/{filename}.yaml', 'r') as infile:
+            data = yaml.safe_load(infile)
+            # Collect lengths in a list
+            lengths = [(len(data['element_list']), len(data['type_rad']), len(data['rads_list']))]
+            # Append based on the release type
+            if data.get('long_term_release'):
+                lengths.append(len(data['annual_discharge_bq_rad_list']))
+            else:
+                lengths.append(len(data['instantaneous_release_bq_list']))
+
+            # Flatten the list of lengths
+            flat_lengths = [item for sublist in lengths for item in
+                            (sublist if isinstance(sublist, tuple) else (sublist,))]
+
+            print("Checking the input File:")
+
+            # Check if all lengths are equal
+            if len(set(flat_lengths)) > 1:
+                raise ValueError(
+                    "Please check the input file. The following entries (element_list, type_rad, rads_list, "
+                    "annual_discharge_bq_rad_list/instantaneous_release_bq_list) must have the same length."
+                )
+            else:
+                print("PASSED initial checking!!")
+
     def get_pickle_it(self):
         try:
             pickle_it = self.input_dict['pickle_it']
@@ -1156,6 +1186,3 @@ class InpGenFunc:
             run_ps_dose_parallel = True
             self.input_dict['run_ps_dose_parallel'] = run_ps_dose_parallel
         return run_ps_dose_parallel
-
-
-

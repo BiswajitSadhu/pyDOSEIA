@@ -339,14 +339,19 @@ def auto_input_generator():
 
 if __name__ == "__main__":
     logdir_name, input_dict = InpGenFunc.get_logdir_name()
+
     if not os.path.exists('%s' % logdir_name):
         os.makedirs('%s' % logdir_name)
     input_file_name, file_exists, input_dict = InpGenFunc.get_input_file_name(logdir_name)
+
     output_file_name, input_dict = InpGenFunc.get_output_file_name()
 
     # subprocess.call("mv %s.yaml %s/" % (input_file_name, input_dict['logdir_name']), shell=True)
     if not file_exists:
         auto_input_generator()
+
+    # check input file for consistency in entries
+    InpGenFunc.check_existing_input_entries()
 
     print("_________________________________________________________________________________")
     print("That's all we needed. Now sit back and relax while we perform the computation :).")
