@@ -184,7 +184,7 @@ class MetFunc(RaddcfFunc):
 
                 # Fill missing values with '999' and reindex
                 f = [c for c in df.columns if c not in colnames[3]]
-                df.loc[:, f] = df.loc[:, f].fillna('999')
+                df.loc[:, f] = df.loc[:, f].fillna(999.0)
                 df = df.reindex(method='nearest')
 
                 # Handle stability category
@@ -312,7 +312,16 @@ class MetFunc(RaddcfFunc):
 
         # Adjust layout and save the plot as a PNG file
         fig.tight_layout()
-        plt.savefig('%s.png' % figname, dpi=600)
+        # Define the file name
+        filename = f"{figname}.png"
+
+        # Check if the file exists and remove it
+        if os.path.exists(filename):
+            os.remove(filename)
+
+        # Save the new figure
+        plt.savefig(filename, dpi=600) 
+        #plt.savefig('%s.png' % figname, dpi=600)
 
         return
 

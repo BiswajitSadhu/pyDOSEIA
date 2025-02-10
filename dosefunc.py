@@ -853,7 +853,7 @@ class DoseFunc:
 
             # C_pfw_obt = the concentration of OBT in Bq/Kg fw of plant product.
             C_pfw_obt = (1 - WCp) * WEQ * R_p * C_tfwt
-
+            print("CPFW_OBT", C_tfwt, C_pfw_obt)
             # WEQ is the water equivalent factor, Litre of water produced per Kg of dry matter combusted (L/Kg)
             # WCp = fractional water content in the biota
             # R_p = ratio of concetration of OBT (Bq/L) to that of TFWT (Bq/L) in the biota.
@@ -864,7 +864,7 @@ class DoseFunc:
             return WEQ, WCp, C_tfwt, C_pfw_hto, C_pfw_obt
 
         # tritium concentration in terrestrial animal products
-        def conc_tritium_in_terrestrial_animal(C_tfwt, C_f_HTO=2.5E5, animal_product='cow_milk',
+        def conc_tritium_in_terrestrial_animal(C_tfwt, C_f_HTO=0, animal_product='cow_milk',
                                                animal_feed_type='leafy_vegetables',
                                                R_p=0.54):
             """
@@ -893,7 +893,7 @@ class DoseFunc:
                         - C_pfw_obt (float): Concentration of OBT in Bq/kg fresh weight of plant product.
             """
 
-            # C_f_HTO = average HTO concentration in ingested water (Bq/L); it can be computed from aquatic modeling
+            # C_f_HTO = average HTO concentration in ingested water (Bq/L); 2.5e5 (default) it can be computed from aquatic modeling
 
             # C_TFWT can be obtained using conc_tritium_in_terrestrial_plant function
             # animal_product has following options: cow_milk, goat_milk, goat_meat, lamb_meat, beef_meat, pork_meat, broiler_meat, egg
@@ -1057,7 +1057,7 @@ class DoseFunc:
                     WEQ, WCp, C_tfwt, C_pfw_hto, C_pfw_obt = conc_tritium_in_terrestrial_plant(
                         max_dilutfac_for_distance_secperm3, C_HTO_atm, climate=self.config['climate'],
                         veg_type=veg_type, CR_s=0.23, gamma=0.909, R_p=0.54)
-
+                    print("C_pfw_hto, C_pfw_obt (for veg):", C_pfw_hto, C_pfw_obt)
                     # to convert it in mSv/y
                     dose_veg_tritium_hto = C_pfw_hto * dcf_hto * DID_veg * float(1000)
                     dose_veg_tritium_obt = C_pfw_obt * dcf_obt * DID_veg * float(1000)
@@ -1068,6 +1068,8 @@ class DoseFunc:
                 sum_dose_milk_tritium = 0
                 sum_dose_meat_tritium = 0
                 for animal_prod in self.config['animal_product_list_for_tritium']:
+
+                    print('animal_prod:', animal_prod)
                     # get C_tfwt based on animal feed type (one of the input in input.yaml file)
                     WEQ, WCp, C_tfwt, C_pfw_hto, C_pfw_obt = conc_tritium_in_terrestrial_plant(
                         max_dilutfac_for_distance_secperm3,
@@ -1076,33 +1078,36 @@ class DoseFunc:
                         veg_type=self.config['animal_feed_type'],
                         CR_s=0.23, gamma=0.909,
                         R_p=0.54)
-
+                    print("C_tfwt, C_pfw_hto, C_pfw_obt (for animal):", C_tfwt, C_pfw_hto, C_pfw_obt)
                     # use C_tfwt and get concentration of tritium for and in terrestrial animals
                     # note: C_f_HTO is user-defined parameter (from observation or aquatic modeling)
-                    C_afw_T_HTO, C_f_OBT, C_afw_T_OBT = conc_tritium_in_terrestrial_animal(C_tfwt=C_tfwt, C_f_HTO=2.5E5,
+                    C_afw_T_HTO, C_f_OBT, C_afw_T_OBT = conc_tritium_in_terrestrial_animal(C_tfwt=C_tfwt, C_f_HTO=0,
                                                                                            animal_product=animal_prod,
                                                                                            animal_feed_type=self.config[
                                                                                                'animal_feed_type'],
                                                                                            R_p=0.54)
+                    print("CAFW_TOBT", C_afw_T_OBT)
                     # concentration to dose using dcf for hto and obt
-                    if 'DID_milk' in inges_param_dict_adult and any(
-                            x in ['cow_milk', 'goat_milk'] for x in self.config['animal_product_list_for_tritium']):
-                        # to convert it in mSv/y
-                        dose_terres_anim_tritium_hto = C_afw_T_HTO * max_dilutfac_for_distance_secperm3 \
-                                                       * dcf_hto * DID_milk * float(1000)
-                        dose_terres_anim_tritium_obt = C_afw_T_OBT * max_dilutfac_for_distance_secperm3 \
-                                                       * dcf_obt * DID_milk * float(1000)
+                    # sum_dose_milk_tritium = 0
+                    #if 'DID_milk' in inges_param_dict_adult and any(
+                    #        x in ['cow_milk', 'goat_milk'] for x in self.config['animal_product_list_for_tritium']):
+                    if 'DID_milk' in inges_param_dict_adult and any(item in ['cow_milk', 'goat_milk'] for item in [animal_prod]): 
+                     # to convert it in mSv/y
+                        dose_terres_anim_tritium_hto = C_afw_T_HTO * dcf_hto * DID_milk * float(1000)
+                        print('TANMAY', C_afw_T_HTO, dcf_hto, DID_milk)
+                        dose_terres_anim_tritium_obt = C_afw_T_OBT * dcf_obt * DID_milk * float(1000)
+                        print('TANMAY_OBT', C_afw_T_OBT, dcf_obt, DID_milk)
                         sum_hto_obt_animal_milk_tritium = dose_terres_anim_tritium_hto + dose_terres_anim_tritium_obt
                         sum_dose_milk_tritium += sum_hto_obt_animal_milk_tritium
-
+                        print('SUMMMMMMMM:', dose_terres_anim_tritium_obt, sum_hto_obt_animal_milk_tritium, sum_dose_milk_tritium)
+                    print('ALL:', sum_hto_obt_animal_milk_tritium)
+                    # sum_dose_meat_tritium = 0
                     if 'DID_meat' in inges_param_dict_adult and any(
                             x in ['cow_meat', 'goat_meat', 'lamb_meat', 'beef_meat', 'broiler_meat', 'pork_meat'] for x
-                            in self.config['animal_product_list_for_tritium']):
+                            in [animal_prod]):
                         # to convert it in mSv/y
-                        dose_terres_anim_tritium_hto = C_afw_T_HTO * max_dilutfac_for_distance_secperm3 \
-                                                       * dcf_hto * DID_meat * float(1000)
-                        dose_terres_anim_tritium_obt = C_afw_T_OBT * max_dilutfac_for_distance_secperm3 \
-                                                       * dcf_obt * DID_meat * float(1000)
+                        dose_terres_anim_tritium_hto = C_afw_T_HTO * dcf_hto * DID_meat * float(1000)
+                        dose_terres_anim_tritium_obt = C_afw_T_OBT * dcf_obt * DID_meat * float(1000)
                         sum_hto_obt_animal_meat_tritium = dose_terres_anim_tritium_hto + dose_terres_anim_tritium_obt
                         sum_dose_meat_tritium += sum_hto_obt_animal_meat_tritium
 
@@ -1171,15 +1176,20 @@ class DoseFunc:
             self.ingestion_dose_vals = ing_dose_stack
 
         if 'H-3' in self.rads_list and 'C-14' not in self.rads_list and len(self.rads_list) > 1:
-            ing_dose_stack = np.concatenate((ingestion_dose, np.array(ingestion_dose_tritium).reshape(1, dosepath))).T
+            # print('INGGGSSSS:', ingestion_dose)
+            # print('TRI:', ingestion_dose_tritium)
+            # print('FINAL:', ing_dose_stack)
+            ing_dose_stack = np.concatenate((ingestion_dose, np.array(ingestion_dose_tritium).reshape(1, dosepath)))
+            # print('FINAL:', ing_dose_stack)
             self.ingestion_dose_vals = ing_dose_stack
 
         if 'H-3' not in self.rads_list and 'C-14' in self.rads_list and len(self.rads_list) > 1:
-            ing_dose_stack = np.concatenate((ingestion_dose, np.array(ingestion_dose_C14).reshape(1, dosepath))).T
+            ing_dose_stack = np.concatenate((ingestion_dose, np.array(ingestion_dose_C14).reshape(1, dosepath)))
             self.ingestion_dose_vals = ing_dose_stack
 
         if 'H-3' in self.rads_list and len(self.rads_list) == 1:
             self.ingestion_dose_vals = np.array(ingestion_dose_tritium).reshape(1, dosepath)
+            print("self.ingestion_dose_vals:", self.ingestion_dose_vals)
 
         if 'C-14' in self.rads_list and len(self.rads_list) == 1:
             self.ingestion_dose_vals = np.array(ingestion_dose_C14).reshape(1, dosepath)
@@ -1332,8 +1342,8 @@ class DoseFunc:
                             -0.5 * (z + self.release_height) ** 2 / (self.sigmaz(stab_cat, x)[0] ** 2)))
                 # used adaptive gaussian quadrature
                 int_expo_xyz = integrate.tplquad(expo_xyz, limit_list[0], limit_list[1], limit_list[2],
-                                                 limit_list[3], limit_list[4], limit_list[5], epsabs=1.49e-05,
-                                                 epsrel=1.49e-05)
+                                                 limit_list[3], limit_list[4], limit_list[5], epsabs=1.49e-02,
+                                                 epsrel=1.49e-02)
                 return int_expo_xyz[0]
 
             t = time.time()
