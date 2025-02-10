@@ -1,0 +1,20 @@
+{Z: 0, age_group: [1, 18], animal_feed_type: leafy_vegetables, animal_product_list_for_tritium: [
+    cow_milk, goat_meat], annual_discharge_bq_rad_list: [6268947000000], calm_correction: true,
+  climate: Continental, column_names: [HOUR, WS 30m(kmph), DIR at 30m, STBCLASS],
+  consider_progeny: true, downwind_distances: [100], element_list: [H], end_operation_time: 24, excel_sheet_name: [
+    '2019', '2020', '2021', '2022', '2023'], exposure_period: 30, have_dilution_factor: false,
+  have_met_data: true, ignore_half_life: 1800, inges_param_dict: {C_wi: 0, alpha: 3,
+    alpha_dry_forage: 3, alpha_wet_crops: 0.3, f_p: 0.7, q_f: 1.2, q_m: 16, q_w: 0.06,
+    q_w_meat: 0.004, t_b: 11000, t_e: 30, t_e_food_crops: 60, t_e_forage_grass: 30,
+    t_f: 20, t_h_animal_pasture: 0, t_h_animal_stored_feed: 90, t_h_wet_crops: 14,
+    t_m: 1}, inges_param_dict_adult: {DID_fish: 0.00, DID_meat: 0.00, DID_milk: 0.5,
+    DID_veg: 1.05, DID_water_and_beverage: 0.000}, inges_param_dict_infant: {DID_fish: 0.000,
+    DID_meat: 0.00, DID_milk: 0.4, DID_veg: 0.215, DID_water_and_beverage: 0.000},
+  input_file_name: augf_no_in_test, logdir_name: augf, long_term_release: true, max_conc_plume_central_line_gl: true,
+  max_dilution_factor: null, measurement_height: 30, num_days: [365, 366, 365, 365,
+    365], output_file_name: augf_out, path_met_file: met_data/Hourly_data_2019_2024_Kalpakkam.xlsx,
+  pickle_it: false, plant_boundary: 100, plot_dilution_factor: true, rads_list: [
+    H-3], release_height: 40, run_dose_computation: true, run_plume_shine_dose: false,
+  run_ps_dose_parallel: true, sampling_time: 60, scaling_dilution_factor_based_on_met_data_speed_distribution: true,
+  single_plume: false, soiltype: peatsoil, start_operation_time: 0, type_rad: [Max],
+  veg_type_list: leafy_vegetables, weathering_corr: true}
