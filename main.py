@@ -366,9 +366,26 @@ def main():
             output_func.output_to_txt(dilution_factor_sectorwise_all_distances, filename=args.output_file_name,
                                   DCFs=DCFs, DOSES=DOSES, INGESTION_DOSES=INGESTION_DOSES, PLUME_DOSES=None)
 
-    
             # Save multiple arrays
             data = {"DOSES": DOSES, "ING_DOSES": INGESTION_DOSES}
+
+            ages = config['age_group']
+            distances = config['downwind_distances']
+            radionuclides = config['rads_list']
+
+            # INGESTION DOSE (three routes)
+            df_ing = reshape_ingestion_dose_data(data['ING_DOSES'], ages, distances, radionuclides)
+            df_ing.to_csv('summary_detailed_ingestion_dose.csv')
+
+            # INH_GS_SUBS DOSES
+            df, df_sum_only = reshape_dose_data(data['DOSES'], df_ing, ages, distances, radionuclides)
+
+            df.to_csv('summary_detailed_inh_gs_sub_dose.csv')
+            df_sum_only.to_csv('summary_summed_inh_gs_sub_dose.csv')
+
+            print("Full DataFrame:\n", df)
+            print("\nSummed DataFrame (with Ingestion dose and Total Dose):\n", df_sum_only)
+
             with open("doses_ing_doses.pkl", "wb") as f:
                 cPickle.dump(data, f)
 
