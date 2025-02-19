@@ -130,7 +130,8 @@ def process_plume_doses(loaded_data, radionuclides, distances=[100, 200]):
 
     return df_plume_dose
 
-def reshape_ingestion_dose_data(ingestion_doses, ages, distances, radionuclides):
+
+def reshape_ingestion_dose_data(ingestion_doses, ages, distances, radionuclides, plant_boundary_dist):
     """
     Reshapes a 4D ingestion dose array (with three ingestion routes) into a structured DataFrame.
 
@@ -144,11 +145,15 @@ def reshape_ingestion_dose_data(ingestion_doses, ages, distances, radionuclides)
     - A pandas DataFrame with Age, Distance, Radionuclide, Veg Dose, Milk Dose, Meat Dose, and Total Dose.
       Includes summed rows per distance.
     """
-    data_rows = []
+
+    if plant_boundary_dist not in distances:
+        distances = distances + [plant_boundary_dist]
+
+    # data_rows = []
 
     # Extract dimensions
-    num_ages, num_distances, num_radionuclides, num_routes = ingestion_doses.shape
-
+    num_distances, num_ages, num_radionuclides, num_routes = ingestion_doses.shape
+    # print("SHAPE_INGESTION:::", ingestion_doses.shape)
     # Validate input dimensions
     assert len(ages) == num_ages, "Mismatch in age list length and array dimensions"
     assert len(distances) == num_distances, "Mismatch in distance list length and array dimensions"
@@ -158,8 +163,8 @@ def reshape_ingestion_dose_data(ingestion_doses, ages, distances, radionuclides)
     df_list = []  # Store dataframes before concatenation
 
     # Iterate over all dimensions
-    for i, age in enumerate(distances):  # Iterate over ages first
-        for j, distance in enumerate(ages):  # Iterate over distances
+    for i, dist in enumerate(distances):  # Iterate over ages first
+        for j, ag in enumerate(ages):  # Iterate over distances
             dose_entries = []  # Store individual rows for each distance
 
             for k, radionuclide in enumerate(radionuclides):  # Iterate over radionuclides
@@ -168,7 +173,7 @@ def reshape_ingestion_dose_data(ingestion_doses, ages, distances, radionuclides)
                 meat_dose = ingestion_doses[i, j, k, 2]  # Dose from meat
                 total_dose = veg_dose + milk_dose + meat_dose  # Total ingestion dose
 
-                dose_entries.append([age, distance, radionuclide, veg_dose, milk_dose, meat_dose, total_dose])
+                dose_entries.append([dist, ag, radionuclide, veg_dose, milk_dose, meat_dose, total_dose])
 
             # Convert to DataFrame
             df_temp = pd.DataFrame(dose_entries, columns=['Distance (m)', 'Age (y)', 'Radionuclide',
@@ -177,8 +182,8 @@ def reshape_ingestion_dose_data(ingestion_doses, ages, distances, radionuclides)
             # Compute summed row
             sum_row = df_temp[['Veg Dose', 'Milk Dose', 'Meat Dose', 'Total']].sum()
             sum_row = pd.DataFrame([{
-                'Distance (m)': age,
-                'Age (y)': distance,
+                'Distance (m)': dist,
+                'Age (y)': ag,
                 'Radionuclide': 'SUM',  # Marker for summed row
                 'Veg Dose': sum_row['Veg Dose'],
                 'Milk Dose': sum_row['Milk Dose'],
@@ -208,7 +213,8 @@ def reshape_ingestion_dose_data(ingestion_doses, ages, distances, radionuclides)
 # distances = [100, 200]  # Distance values
 # radionuclides = ['Sr-90', 'Cs-137', 'H-3']  # Radionuclide types
 
-def reshape_dose_data(doses_array, df_ing, ages, distances, radionuclides):
+
+def reshape_dose_data(doses_array, df_ing, ages, distances, radionuclides, plant_boundary_dist):
     """
     Reshapes a 4D dose array into a structured DataFrame and adds summed rows per distance.
     Also adds ingestion dose from df_ing.
@@ -219,17 +225,22 @@ def reshape_dose_data(doses_array, df_ing, ages, distances, radionuclides):
     - ages: List of age values.
     - distances: List of distance values.
     - radionuclides: List of radionuclide names.
+    - plant_boundary_dist: distance of plant boundary (metre)
 
     Returns:
     - df: DataFrame with individual radionuclide doses.
     - df_sum_only: DataFrame with summed doses per distance, including ingestion dose.
     """
+
+    if plant_boundary_dist not in distances:
+        distances = distances + [plant_boundary_dist]
+
     df_list = []  # Store dataframes before concatenation
     sum_list = []  # Store summed rows
 
     # Extract dimensions
-    num_ages, num_distances, dose_types, num_radionuclides = doses_array.shape
-    
+    num_distances, num_ages, dose_types, num_radionuclides = doses_array.shape
+
     # Validate input dimensions
     assert len(ages) == num_ages, "Mismatch in age list length and array dimensions"
     assert len(distances) == num_distances, "Mismatch in distance list length and array dimensions"
@@ -237,8 +248,8 @@ def reshape_dose_data(doses_array, df_ing, ages, distances, radionuclides):
     assert dose_types == 3, "Dose array should have 3 dose types (Inhalation, Ground-shine, Submersion)"
     
     # Iterate over all dimensions
-    for i, age in enumerate(ages):  
-        for j, distance in enumerate(distances):  
+    for i, dist in enumerate(distances):
+        for j, ag in enumerate(ages):
             dose_entries = []  # Store individual rows for each distance
 
             for k, radionuclide in enumerate(radionuclides):  # Iterate over radionuclides
@@ -247,7 +258,7 @@ def reshape_dose_data(doses_array, df_ing, ages, distances, radionuclides):
                 submersion = doses_array[i, j, 2, k]  
                 total_dose = inhalation + ground_shine + submersion
 
-                dose_entries.append([age, distance, radionuclide, inhalation, ground_shine, submersion, total_dose])
+                dose_entries.append([dist, ag, radionuclide, inhalation, ground_shine, submersion, total_dose])
 
             # Convert to DataFrame
             df_temp = pd.DataFrame(dose_entries, columns=['Age (y)', 'Distance (m)', 'Radionuclide', 
@@ -257,8 +268,8 @@ def reshape_dose_data(doses_array, df_ing, ages, distances, radionuclides):
             # Compute summed row (without Radionuclide column, and removing Total)
             sum_row = df_temp[['Inhalation dose (mSv)', 'Ground-shine (mSv)', 'Submersion (mSv)']].sum()
             sum_row = {
-                'Age (y)': age, 
-                'Distance (m)': distance, 
+                'Age (y)': ag,
+                'Distance (m)': dist,
                 'Inhalation dose (mSv)': sum_row['Inhalation dose (mSv)'], 
                 'Ground-shine (mSv)': sum_row['Ground-shine (mSv)'], 
                 'Submersion (mSv)': sum_row['Submersion (mSv)']
@@ -336,16 +347,20 @@ def main():
             # Save multiple arrays
             data = {"DOSES": DOSES, "ING_DOSES": INGESTION_DOSES, "PLUME_DOSES": PLUME_DOSES}
             
+            with open("doses_ing_doses_ps_doses.pkl", "wb") as f:
+                cPickle.dump(data, f)
+
             ages = config['age_group']
+            plant_boundary_dist = config['plant_boundary']
             distances = config['downwind_distances']
             radionuclides = config['rads_list']
 
             # INGESTION DOSE (three routes)
-            df_ing = reshape_ingestion_dose_data(data['ING_DOSES'], ages, distances, radionuclides)
+            df_ing = reshape_ingestion_dose_data(data['ING_DOSES'], ages, distances, radionuclides, plant_boundary_dist)
             df_ing.to_csv('summary_detailed_ingestion_dose.csv')
 
             # INH_GS_SUBS DOSES
-            df, df_sum_only = reshape_dose_data(data['DOSES'], df_ing, ages, distances, radionuclides)
+            df, df_sum_only = reshape_dose_data(data['DOSES'], df_ing, ages, distances, radionuclides, plant_boundary_dist)
             
             df.to_csv('summary_detailed_inh_gs_sub_dose.csv')
             df_sum_only.to_csv('summary_summed_inh_gs_sub_dose.csv')
@@ -358,8 +373,7 @@ def main():
                 df_plume = process_plume_doses(data, radionuclides, distances)
                 df_plume.to_csv('summary_detailed_plume_dose.csv')    
             
-            with open("doses_ing_doses_ps_doses.pkl", "wb") as f:
-                cPickle.dump(data, f)
+
 
         else:
             DCFs, dilution_factor_sectorwise_all_distances, DOSES, INGESTION_DOSES = output_func.dose_calculation_script()
@@ -368,6 +382,9 @@ def main():
 
             # Save multiple arrays
             data = {"DOSES": DOSES, "ING_DOSES": INGESTION_DOSES}
+
+            with open("doses_ing_doses.pkl", "wb") as f:
+                cPickle.dump(data, f)
 
             ages = config['age_group']
             distances = config['downwind_distances']
