@@ -339,6 +339,11 @@ def main():
                                   DCFs=None, DOSES=None, INGESTION_DOSES=None, PLUME_DOSES=None)
 
     if config['run_dose_computation']:
+        ages = config['age_group']
+        plant_boundary_dist = config['plant_boundary']
+        distances = config['downwind_distances']
+        radionuclides = config['rads_list']
+
         if config['run_plume_shine_dose']:
             DCFs, dilution_factor_sectorwise_all_distances, DOSES, INGESTION_DOSES, PLUME_DOSES = output_func.dose_calculation_script()
             output_func.output_to_txt(dilution_factor_sectorwise_all_distances, filename=args.output_file_name, DCFs=DCFs,
@@ -350,10 +355,7 @@ def main():
             with open("doses_ing_doses_ps_doses.pkl", "wb") as f:
                 cPickle.dump(data, f)
 
-            ages = config['age_group']
-            plant_boundary_dist = config['plant_boundary']
-            distances = config['downwind_distances']
-            radionuclides = config['rads_list']
+
 
             # INGESTION DOSE (three routes)
             df_ing = reshape_ingestion_dose_data(data['ING_DOSES'], ages, distances, radionuclides, plant_boundary_dist)
@@ -372,8 +374,6 @@ def main():
             if config['long_term_release']:
                 df_plume = process_plume_doses(data, radionuclides, distances)
                 df_plume.to_csv('summary_detailed_plume_dose.csv')    
-            
-
 
         else:
             DCFs, dilution_factor_sectorwise_all_distances, DOSES, INGESTION_DOSES = output_func.dose_calculation_script()
@@ -386,16 +386,12 @@ def main():
             with open("doses_ing_doses.pkl", "wb") as f:
                 cPickle.dump(data, f)
 
-            ages = config['age_group']
-            distances = config['downwind_distances']
-            radionuclides = config['rads_list']
-
             # INGESTION DOSE (three routes)
-            df_ing = reshape_ingestion_dose_data(data['ING_DOSES'], ages, distances, radionuclides)
+            df_ing = reshape_ingestion_dose_data(data['ING_DOSES'], ages, distances, radionuclides, plant_boundary_dist)
             df_ing.to_csv('summary_detailed_ingestion_dose.csv')
 
             # INH_GS_SUBS DOSES
-            df, df_sum_only = reshape_dose_data(data['DOSES'], df_ing, ages, distances, radionuclides)
+            df, df_sum_only = reshape_dose_data(data['DOSES'], df_ing, ages, distances, radionuclides, plant_boundary_dist)
 
             df.to_csv('summary_detailed_inh_gs_sub_dose.csv')
             df_sum_only.to_csv('summary_summed_inh_gs_sub_dose.csv')
