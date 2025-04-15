@@ -49,3 +49,4 @@ Table 3: Recommended Gamma Ray Energies and Emission Probabilities Ordered by Ra
 <a name="ref5">[5]</a> ICRP Publication 107, 2008.
 <a name="ref6">[6]</a> IAEA, 2007. Decay Data for Radionuclides.
 
+
