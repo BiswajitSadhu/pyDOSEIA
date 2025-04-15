@@ -1,44 +1,17 @@
 📘 Summary of Reference Data Sources Used in pyDOSEIA
-Data	Reference
-Inhalation	
-Annex G: Effective Dose Coefficients for Inhalation of Radionuclides for Members of the Public	ICRP Publication 119 
-1
-1
-Annex H: Dose Coefficients for Inhalation of Soluble or Reactive Gases and Vapours for Members of the Public	
-Table A-2: Effective Dose Coefficients from Inhaled Air	DOE-STD-1196-2011 
-2
-2
-Table 5: Effective Dose Coefficients for Members of the Public – Inhalation Dose Coefficients, e(τ), to age 70 y (Sv/Bq)	JAERI-Data/Code 2002-013 
-3
-3
-Table 7: Effective Dose Coefficients for Members of the Public – Inhalation Dose Coefficients, e(τ), to age 70 y (Sv/Bq) for Soluble or Reactive Gases and Vapours (Class SR-1 and SR-2)	
-Ground Shine	
-Table 4-1: Reference Person Effective Dose Rate Coefficients for Ground Surface (Sv Bq⁻¹ s⁻¹ m²)	FGR-15 
-4
-4
-Submersion	
-Table 4-6: Reference Person Effective Dose Rate Coefficients for Air Submersion (Sv Bq⁻¹ s⁻¹ m³)	FGR-15 
-4
-4
-Ingestion	
-Annex F: Effective Dose Coefficients (e) for Ingestion of Radionuclides for Members of the Public to 70 years of age (Sv/Bq)	ICRP Publication 119 
-1
-1
-Table 4: Effective Dose Coefficients for Members of the Public—Ingestion Dose Coefficients, e(τ) to age 70 y (Sv/Bq)	JAERI-Data/Code 2002-013 
-3
-3
-Half-Life	
-Table A.1: Properties of the Radionuclides: ICRP-07 Collection	ICRP Publication 107 
-5
-5
-Table 1: Radionuclides Included in Dose Coefficient Database (Ingestion and Inhalation of Particulates)	JAERI-Data/Code 2002-013 
-3
-3
-Table 2: Radionuclides Included in Dose Coefficient Database (Inert Gases)	
-Gamma Energy/Intensity	
-Table 3: Recommended Gamma Ray Energies and Emission Probabilities Ordered by Radionuclide	IAEA, 2007 
-6
-6
+Category	Description	Reference
+Inhalation	Effective dose coefficients for inhalation of radionuclides	ICRP Publication 119 [1]
+Inhalation	Dose coefficients for soluble/reactive gases and vapours	—
+Inhalation	Effective dose from inhaled air	DOE-STD-1196-2011 [2]
+Inhalation	Dose coefficients to age 70 y (Sv/Bq)	JAERI 2002 [3]
+Inhalation	Dose coefficients for soluble/reactive gases (SR-1/SR-2)	—
+Ground Shine	Dose rate for ground surface (Sv/Bq/s/m²)	FGR-15 [4]
+Submersion	Dose rate for air submersion (Sv/Bq/s/m³)	FGR-15 [4]
+Ingestion	Ingestion dose coefficients to age 70 y	ICRP 119 [1], JAERI 2002 [3]
+Half-Life	Radionuclide properties (ICRP-07)	ICRP 107 [5]
+Half-Life	Radionuclides in dose coefficient DB	JAERI 2002 [3]
+Gamma	Gamma ray energies & emission probabilities	IAEA 2007 [6]
+
 ℹ️ pyDOSEIA allows incorporating the contribution from progeny (see Eq. #ref:progeny) if the user chooses to do so; otherwise, it returns unmodified dose coefficients.
 
 📚 References
