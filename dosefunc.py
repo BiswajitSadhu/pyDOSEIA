@@ -199,6 +199,8 @@ class DoseFunc:
         else:
             raise ValueError('The age of recipient must be a number.')
 
+
+
         # inhalation_dose = max_dilutfac_for_distance_secperm3 * annual_discharge_ci_rad_list
         dcfs = self.inhalation_dcf_list(master_file="library/RadioToxicityMaster.xls",
                                         sheet_name="Inhalation CED Sv per Bq Public", age=age)
@@ -312,9 +314,11 @@ class DoseFunc:
                 # convert dose to year
                 gs_dose = gs_dose * (365 * 24 * 3600)
                 logging.getLogger("Ground shine Dose").info(
-                    'DCF used for radionuclide {} is {} Sv-m^2/Bq-second [progeny corrected (if required), uncorrected]:'.format(self.rads_list[bdx],
-                                                                                          dcf))
-                print("Ground shine Dose: DCF used for radionuclide {} is {} Sv-m^2/Bq-second:".format(self.rads_list[bdx],dcf))
+                    'DCF used for radionuclide {} is {} Sv-m^2/Bq-second [progeny corrected (if required), uncorrected]:'.format(
+                        self.rads_list[bdx],
+                        dcf))
+                print("Ground shine Dose: DCF used for radionuclide {} is {} Sv-m^2/Bq-second:".format(
+                    self.rads_list[bdx], dcf))
                 print('Deposition rate for radionuclide {} is {} Bq/m2-second'.format(self.rads_list[bdx],
                                                                                       deposition_rate))
                 print('Concentration of radionuclide {} on the ground is {} Bq/m^2:'.format(self.rads_list[bdx],
@@ -341,19 +345,20 @@ class DoseFunc:
                 # convert dose to year
                 gs_dose = gs_dose * (365 * 24 * 3600)
                 logging.getLogger("Ground shine Dose").info(
-                    'DCF used for radionuclide {} is {} Sv-m^2/Bq-second [progeny uncorrected values]:'.format(self.rads_list[bdx],
-                                                                                          dcf[0]))
+                    'DCF used for radionuclide {} is {} Sv-m^2/Bq-second [progeny uncorrected values]:'.format(
+                        self.rads_list[bdx],
+                        dcf[0]))
                 logging.getLogger("Ground shine Dose").info(
                     'Deposition rate for radionuclide {} is {} Bq/m2-second'.format(self.rads_list[bdx],
-                                                                                      deposition_rate))
+                                                                                    deposition_rate))
                 logging.getLogger("Ground shine Dose").info(
                     'Concentration of radionuclide {} on the ground is {} Bq/m^2:'.format(self.rads_list[bdx],
-                                                                                            conc_rad_ground))
+                                                                                          conc_rad_ground))
 
                 print("Ground shine Dose: DCF used for radionuclide {} is {} Sv-m^2/Bq-second:".format(
                     self.rads_list[bdx], dcf))
                 print('Deposition rate for radionuclide {} is {} Bq/m^2-second'.format(self.rads_list[bdx],
-                                                                                      deposition_rate))
+                                                                                       deposition_rate))
                 print('Concentration of radionuclide {} on the ground is {} Bq/m^2:'.format(self.rads_list[bdx],
                                                                                             conc_rad_ground))
                 # long-term release
@@ -410,9 +415,10 @@ class DoseFunc:
             for bdx, (discharge_rad, dcf) in enumerate(zip(discharge_q, dcfs)):
                 logging.getLogger("Submersion Dose").info(
                     'DCF used for radionuclide {} is {} Sv-m3/Bq-s:'.format(self.rads_list[bdx],
-                                                                                          dcf))
-                print("Submersion Dose: DCF used for radionuclide {} is {} Sv-m3/Bq-second [progeny corrected (if required), uncorrected]:".format(
-                    self.rads_list[bdx], dcf))
+                                                                            dcf))
+                print(
+                    "Submersion Dose: DCF used for radionuclide {} is {} Sv-m3/Bq-second [progeny corrected (if required), uncorrected]:".format(
+                        self.rads_list[bdx], dcf))
 
                 if self.config['single_plume']:
                     # converting DCF /sec to /year; for single plume do not convert dcf unit to year
@@ -432,8 +438,9 @@ class DoseFunc:
             # take uncorrected DCF
             for bdx, (discharge_rad, dcf) in enumerate(zip(discharge_q, dcfs)):
                 logging.getLogger("Submersion Dose").info(
-                    'DCF used for radionuclide {} is {} Sv-m3/Bq-s [progeny not considered]:'.format(self.rads_list[bdx],
-                                                                                          dcf[0]))
+                    'DCF used for radionuclide {} is {} Sv-m3/Bq-s [progeny not considered]:'.format(
+                        self.rads_list[bdx],
+                        dcf[0]))
                 print("Submersion Dose: DCF used for radionuclide {} is {} Sv-m3/Bq-second:".format(
                     self.rads_list[bdx], dcf))
                 if self.config['single_plume']:
@@ -1089,17 +1096,19 @@ class DoseFunc:
                     print("CAFW_TOBT", C_afw_T_OBT)
                     # concentration to dose using dcf for hto and obt
                     # sum_dose_milk_tritium = 0
-                    #if 'DID_milk' in inges_param_dict_adult and any(
+                    # if 'DID_milk' in inges_param_dict_adult and any(
                     #        x in ['cow_milk', 'goat_milk'] for x in self.config['animal_product_list_for_tritium']):
-                    if 'DID_milk' in inges_param_dict_adult and any(item in ['cow_milk', 'goat_milk'] for item in [animal_prod]): 
-                     # to convert it in mSv/y
+                    if 'DID_milk' in inges_param_dict_adult and any(
+                            item in ['cow_milk', 'goat_milk'] for item in [animal_prod]):
+                        # to convert it in mSv/y
                         dose_terres_anim_tritium_hto = C_afw_T_HTO * dcf_hto * DID_milk * float(1000)
                         print('TANMAY', C_afw_T_HTO, dcf_hto, DID_milk)
                         dose_terres_anim_tritium_obt = C_afw_T_OBT * dcf_obt * DID_milk * float(1000)
                         print('TANMAY_OBT', C_afw_T_OBT, dcf_obt, DID_milk)
                         sum_hto_obt_animal_milk_tritium = dose_terres_anim_tritium_hto + dose_terres_anim_tritium_obt
                         sum_dose_milk_tritium += sum_hto_obt_animal_milk_tritium
-                        print('SUMMMMMMMM:', dose_terres_anim_tritium_obt, sum_hto_obt_animal_milk_tritium, sum_dose_milk_tritium)
+                        print('SUMMMMMMMM:', dose_terres_anim_tritium_obt, sum_hto_obt_animal_milk_tritium,
+                              sum_dose_milk_tritium)
                     print('ALL:', sum_hto_obt_animal_milk_tritium)
                     # sum_dose_meat_tritium = 0
                     if 'DID_meat' in inges_param_dict_adult and any(
@@ -1468,16 +1477,18 @@ class DoseFunc:
                                 # height correction: height factor shape: (6,)
                                 habc = np.einsum('ijkl, j->ijkl', abc, 1 / np.array(height_factors))
                                 # sum over speed dimension for particular direction sector
-                                ab = np.einsum('ijkl ->ijl', habc)
-                                # inte = integral of shape (1,6) for six stab cat
+
                                 inte = np.array(all_integral_stab_cat_energy_wise[raddx][ndx]).reshape(1, 6)
                                 # add unit correction and ps_factors
-                                inte = inte * time_unit * ps_factors
-                                # multiple inte
-                                abinte = np.einsum('ijk, ij->ijk', ab, inte)
-                                # sum over stability categories to get plumeshine dose across all 16 sectors
-                                plumeshine_dose = np.einsum('ijk ->ik', abinte)
-                                # store it in a list
+                                #inte = inte * time_unit * ps_factors
+                                inte = inte * ps_factors
+
+                                # Step 1: Multiply along k-dimension (speed categories)
+                                abinte = habc * inte.reshape(1, 6, 1, 1)  # Output shape: (1,6,9,16)
+
+                                # Step 2: Sum over k (speed) and j (stability categories)
+                                plumeshine_dose = np.einsum('ijkl -> il', abinte)  # Output shape: (1,16)
+
                                 ps_dir.append(plumeshine_dose)
                             # neglected radionuclide (mostly pure-beta emitter)
                             else:
@@ -1487,7 +1498,19 @@ class DoseFunc:
                         pl_sh_list = np.array(energywise_ps_list).sum(axis=0)
                         rads_ps_list.append(pl_sh_list)
                     pl_sh_sectors_list_all_year.append(rads_ps_list)
-        return pl_sh_sectors_list_all_year
+        # THIS BLOCK IS TO CONSIDER RELEASE QUANTITY IN PLUME SHINE DOSE COMPUTATION. WITHOUT THIS RESULTS ARE FOR
+        # UNIT RELEASE;
+        if self.config['long_term_release']:
+            # Bq/year is converted Bq/s.
+            release_bq_per_sec = np.array(self.config['annual_discharge_bq_rad_list'])/float(31536000)
+            pl_sh_sectors_list_all_year = [[[b * x for x in inner] for inner in outer] for b, outer in
+                                           zip(release_bq_per_sec, pl_sh_sectors_list_all_year)]
+        else:
+            pl_sh_sectors_list_all_year = [[[b * x for x in inner] for inner in outer] for b, outer in
+                                           zip(self.config['instantaneous_release_bq_list'],
+                                               pl_sh_sectors_list_all_year)]
+
+        return np.array(pl_sh_sectors_list_all_year)
 
     def zeroing_ingestion(self, df, notrelm):
         """

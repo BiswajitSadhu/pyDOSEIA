@@ -13,6 +13,7 @@ import pandas as pd
 
 sys.path.append(".")
 
+
 def parse_arguments():
     """
         Parse command-line arguments.
@@ -69,7 +70,6 @@ def convert_none_to_str(data):
 
 
 def process_plume_doses(loaded_data, radionuclides, distances=[100, 200]):
-
     """
     Processes plume dose data from a pickle file and returns a structured DataFrame.
 
@@ -208,6 +208,7 @@ def reshape_ingestion_dose_data(ingestion_doses, ages, distances, radionuclides,
 
     return df
 
+
 # Example Usage
 # ages = [1, 18]  # Age groups
 # distances = [100, 200]  # Distance values
@@ -246,32 +247,32 @@ def reshape_dose_data(doses_array, df_ing, ages, distances, radionuclides, plant
     assert len(distances) == num_distances, "Mismatch in distance list length and array dimensions"
     assert len(radionuclides) == num_radionuclides, "Mismatch in radionuclide list length and array dimensions"
     assert dose_types == 3, "Dose array should have 3 dose types (Inhalation, Ground-shine, Submersion)"
-    
+
     # Iterate over all dimensions
     for i, dist in enumerate(distances):
         for j, ag in enumerate(ages):
             dose_entries = []  # Store individual rows for each distance
 
             for k, radionuclide in enumerate(radionuclides):  # Iterate over radionuclides
-                inhalation = doses_array[i, j, 0, k]  
-                ground_shine = doses_array[i, j, 1, k]  
-                submersion = doses_array[i, j, 2, k]  
+                inhalation = doses_array[i, j, 0, k]
+                ground_shine = doses_array[i, j, 1, k]
+                submersion = doses_array[i, j, 2, k]
                 total_dose = inhalation + ground_shine + submersion
 
                 dose_entries.append([dist, ag, radionuclide, inhalation, ground_shine, submersion, total_dose])
 
             # Convert to DataFrame
-            df_temp = pd.DataFrame(dose_entries, columns=['Age (y)', 'Distance (m)', 'Radionuclide', 
-                                                          'Inhalation dose (mSv)', 'Ground-shine (mSv)', 
+            df_temp = pd.DataFrame(dose_entries, columns=['Age (y)', 'Distance (m)', 'Radionuclide',
+                                                          'Inhalation dose (mSv)', 'Ground-shine (mSv)',
                                                           'Submersion (mSv)', 'Total (mSv)'])
-            
+
             # Compute summed row (without Radionuclide column, and removing Total)
             sum_row = df_temp[['Inhalation dose (mSv)', 'Ground-shine (mSv)', 'Submersion (mSv)']].sum()
             sum_row = {
                 'Age (y)': ag,
                 'Distance (m)': dist,
-                'Inhalation dose (mSv)': sum_row['Inhalation dose (mSv)'], 
-                'Ground-shine (mSv)': sum_row['Ground-shine (mSv)'], 
+                'Inhalation dose (mSv)': sum_row['Inhalation dose (mSv)'],
+                'Ground-shine (mSv)': sum_row['Ground-shine (mSv)'],
                 'Submersion (mSv)': sum_row['Submersion (mSv)']
             }
 
@@ -293,7 +294,8 @@ def reshape_dose_data(doses_array, df_ing, ages, distances, radionuclides, plant
     df_sum_only = df_sum_only.merge(df_ing_total, on=['Age (y)', 'Distance (m)'], how='left')
 
     # Compute final total including ingestion
-    df_sum_only['Total Dose (mSv)'] = df_sum_only[['Inhalation dose (mSv)', 'Ground-shine (mSv)', 'Submersion (mSv)', 'Ingestion dose (mSv)']].sum(axis=1)
+    df_sum_only['Total Dose (mSv)'] = df_sum_only[
+        ['Inhalation dose (mSv)', 'Ground-shine (mSv)', 'Submersion (mSv)', 'Ingestion dose (mSv)']].sum(axis=1)
 
     # Sort the DataFrames
     df = df.sort_values(by=['Age (y)']).reset_index(drop=True)
@@ -301,8 +303,9 @@ def reshape_dose_data(doses_array, df_ing, ages, distances, radionuclides, plant
 
     # Convert scientific notation for readability
     pd.options.display.float_format = '{:.3e}'.format
-    
+
     return df, df_sum_only
+
 
 def main():
     """
@@ -346,39 +349,44 @@ def main():
 
         if config['run_plume_shine_dose']:
             DCFs, dilution_factor_sectorwise_all_distances, DOSES, INGESTION_DOSES, PLUME_DOSES = output_func.dose_calculation_script()
-            output_func.output_to_txt(dilution_factor_sectorwise_all_distances, filename=args.output_file_name, DCFs=DCFs,
-                                  DOSES=DOSES, INGESTION_DOSES=INGESTION_DOSES, PLUME_DOSES=PLUME_DOSES)
-        
+            output_func.output_to_txt(dilution_factor_sectorwise_all_distances, filename=args.output_file_name,
+                                      DCFs=DCFs,
+                                      DOSES=DOSES, INGESTION_DOSES=INGESTION_DOSES, PLUME_DOSES=PLUME_DOSES)
+
             # Save multiple arrays
             data = {"DOSES": DOSES, "ING_DOSES": INGESTION_DOSES, "PLUME_DOSES": PLUME_DOSES}
-            
+
             with open("doses_ing_doses_ps_doses.pkl", "wb") as f:
                 cPickle.dump(data, f)
 
-
-
             # INGESTION DOSE (three routes)
             df_ing = reshape_ingestion_dose_data(data['ING_DOSES'], ages, distances, radionuclides, plant_boundary_dist)
-            df_ing.to_csv('summary_detailed_ingestion_dose.csv')
+            output_path = os.path.join(config['logdir_name'], 'summary_detailed_ingestion_dose.csv')
+            df_ing.to_csv(output_path)
 
             # INH_GS_SUBS DOSES
-            df, df_sum_only = reshape_dose_data(data['DOSES'], df_ing, ages, distances, radionuclides, plant_boundary_dist)
-            
-            df.to_csv('summary_detailed_inh_gs_sub_dose.csv')
-            df_sum_only.to_csv('summary_summed_inh_gs_sub_dose.csv')
+            df, df_sum_only = reshape_dose_data(data['DOSES'], df_ing, ages, distances, radionuclides,
+                                                plant_boundary_dist)
+
+            #df.to_csv('summary_detailed_inh_gs_sub_dose.csv')
+            output_path = os.path.join(config['logdir_name'], 'summary_detailed_inh_gs_sub_dose.csv')
+            df.to_csv(output_path)
+            output_path = os.path.join(config['logdir_name'], 'summary_summed_inh_gs_sub_dose.csv')
+            df_sum_only.to_csv(output_path)
 
             print("Full DataFrame:\n", df)
             print("\nSummed DataFrame (with Ingestion dose and Total Dose):\n", df_sum_only)
-            
+
             # PLUME DOSE
             if config['long_term_release']:
                 df_plume = process_plume_doses(data, radionuclides, distances)
-                df_plume.to_csv('summary_detailed_plume_dose.csv')    
+                output_path = os.path.join(config['logdir_name'], 'summary_detailed_plume_dose.csv')
+                df_plume.to_csv(output_path)
 
         else:
             DCFs, dilution_factor_sectorwise_all_distances, DOSES, INGESTION_DOSES = output_func.dose_calculation_script()
             output_func.output_to_txt(dilution_factor_sectorwise_all_distances, filename=args.output_file_name,
-                                  DCFs=DCFs, DOSES=DOSES, INGESTION_DOSES=INGESTION_DOSES, PLUME_DOSES=None)
+                                      DCFs=DCFs, DOSES=DOSES, INGESTION_DOSES=INGESTION_DOSES, PLUME_DOSES=None)
 
             # Save multiple arrays
             data = {"DOSES": DOSES, "ING_DOSES": INGESTION_DOSES}
@@ -388,13 +396,16 @@ def main():
 
             # INGESTION DOSE (three routes)
             df_ing = reshape_ingestion_dose_data(data['ING_DOSES'], ages, distances, radionuclides, plant_boundary_dist)
-            df_ing.to_csv('summary_detailed_ingestion_dose.csv')
+            output_path = os.path.join(config['logdir_name'], 'summary_detailed_ingestion_dose.csv')
+            df_ing.to_csv(output_path)
 
             # INH_GS_SUBS DOSES
-            df, df_sum_only = reshape_dose_data(data['DOSES'], df_ing, ages, distances, radionuclides, plant_boundary_dist)
-
-            df.to_csv('summary_detailed_inh_gs_sub_dose.csv')
-            df_sum_only.to_csv('summary_summed_inh_gs_sub_dose.csv')
+            df, df_sum_only = reshape_dose_data(data['DOSES'], df_ing, ages, distances, radionuclides,
+                                                plant_boundary_dist)
+            output_path = os.path.join(config['logdir_name'], 'summary_detailed_inh_gs_sub_dose.csv')
+            df.to_csv(output_path)
+            output_path = os.path.join(config['logdir_name'], 'summary_summed_inh_gs_sub_dose.csv')
+            df_sum_only.to_csv(output_path)
 
             print("Full DataFrame:\n", df)
             print("\nSummed DataFrame (with Ingestion dose and Total Dose):\n", df_sum_only)

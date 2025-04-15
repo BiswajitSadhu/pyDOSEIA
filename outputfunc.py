@@ -620,7 +620,7 @@ class OutputFunc(MetFunc):
                 elif self.config['run_plume_shine_dose'] and age == self.age_group[-1] \
                         and self.config['long_term_release'] and self.config['have_met_data']:
                     f.write('\n\n')
-                    f.write('########### PLUME SHINE DOSE for radionuclides (Long Term Release Scenario) ###########')
+                    f.write('########### PLUME SHINE DOSE for radionuclides (Long Term Release Scenario) (microSv per year) ###########')
                     f.write('\n')
                     if len(neglected_energies) > 0:
                         f.write(
@@ -696,6 +696,29 @@ class OutputFunc(MetFunc):
         list_dcf_inhalation = self.inhalation_dcf_list(master_file="library/RadioToxicityMaster.xls",
                                                        sheet_name="Inhalation CED Sv per Bq Public",
                                                        age=age)
+
+
+        A = self.get_dcfs_for_radionuclides(age)
+
+        # Extract all available radionuclides
+        radionuclides = list(A.keys())
+
+        # Extract values for max_dcf_inh_public and max_dcf_ing_public
+        list_dcf_inhalation = [A[nuclide].get('max_dcf_inh_public', None) if A[nuclide] else None for nuclide in radionuclides]
+        list_dcf_ingestion = [A[nuclide].get('max_dcf_ing_public', None) if A[nuclide] else None for nuclide in radionuclides]
+        # print('resutlsssssss:',list_dcf_inhalation, list_dcf_ingestion)
+        # Create the final 2D list
+        #list_dcfs = [inh_values, ing_values]
+
+        #print('AAA:', A)
+        #list_dcfs = [[A[key]['max_dcf_ing_public'] or 0, A[key]['max_dcf_inh_public'] or 0] for key in A]
+        #print('listsssss:', list_dcfs)
+        #list_dcfs = [[A[k]['max_dcf_inh_public'] for k in A], [A[k]['max_dcf_ing_public'] for k in A]]
+
+        #list_dcf_inhalation = list(max_rad_dcf_dict.values())
+        #list_dcf_inhalation = list_dcfs[0]
+        #list_dcf_ingestion = list_dcfs[1]
+
         # ground shine
         list_dcf_ecerman_ground_shine = self.dcf_list_ecerman_ground_shine_include_progeny(
             master_file="library/Dose_ecerman_final.xlsx", sheet_name="surface_dose", age=age,
@@ -705,8 +728,9 @@ class OutputFunc(MetFunc):
             master_file="library/Dose_ecerman_final.xlsx",
             sheet_name="submersion_dose", age=age)
         # ingestion
-        list_dcf_ingestion = self.dcf_list_ingestion(master_file="library/Dose_ecerman_final.xlsx",
-                                                     sheet_name="ingestion_gsr3", age=age)
+        #list_dcf_ingestion = self.dcf_list_ingestion(master_file="library/Dose_ecerman_final.xlsx",
+        #                                             sheet_name="ingestion_gsr3", age=age)
+
         DCFs.append([list_dcf_inhalation, list_dcf_ecerman_ground_shine, list_dcf_ecerman_submersion, list_dcf_ingestion])
         return DCFs
 
@@ -1080,6 +1104,8 @@ class OutputFunc(MetFunc):
                                                                    age=age)
                     inhalation_dose_values = self.inhalation_dose(X1, age=age)
                     inhalation_dose_values = np.array(inhalation_dose_values).flatten()
+
+
                     # ground shine
                     list_dcf_ecerman_ground_shine = self.dcf_list_ecerman_ground_shine_include_progeny(
                         master_file="library/Dose_ecerman_final.xlsx", sheet_name="surface_dose", age=age,

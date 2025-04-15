@@ -1142,9 +1142,12 @@ class InpGenFunc:
                 print("desired file name format incorrect.")
         return input_file_name, file_exists, self.input_dict
 
+
+
     def check_existing_input_entries(self):
         filename = self.input_dict['input_file_name']
         logdir_name = self.input_dict['logdir_name']
+        output_file_name = self.input_dict['output_file_name']
 
         with open(f'{logdir_name}/{filename}.yaml', 'r') as infile:
             data = yaml.safe_load(infile)
@@ -1170,6 +1173,20 @@ class InpGenFunc:
                 )
             else:
                 print("PASSED initial checking!!")
+
+            if 'logdir_name' in data:
+                data['logdir_name'] = logdir_name
+                data['output_file_name'] = output_file_name
+
+            yaml_path = os.path.join(logdir_name, f'{filename}.yaml')
+            # Write the updated YAML back to file
+            with open(yaml_path, 'w') as outfile:
+                yaml.safe_dump(data, outfile)
+
+            print(f"⚠️ Logdir name modified in YAML input to: '{logdir_name}'.")
+            print(f"⚠️ output file name modified in YAML input to: '{output_file_name}'.")
+            print(f"🔹 All output files will be saved in: {logdir_name}/")
+
 
     def get_pickle_it(self):
         try:
