@@ -32,3 +32,16 @@
 <a name="ref6">[6]</a> IAEA, 2007. Decay Data for Radionuclides.
 
 
+### Ingestion Data Tables Used in pyDOSEIA
+
+| **Ingestion Data Used in pyDOSEIA** | **Reference** |
+|-------------------------------------|---------------|
+| Table VII: Conservative Values for Mass Interception and Environmental Removal Rates from Plant Surfaces | IAEA SRS 19 [^1] |
+| Table VIII: Conservative Values for Crop and Soil Exposure Periods and Delay Times | IAEA SRS 19 [^1] |
+| Table IX: Effective Surface Soil Density for Screening Purposes | IAEA SRS 19 [^1] |
+| Table X: Loss Rate Constant Values for Screening Purposes | IAEA SRS 19 [^1] |
+| Table XI: Element-Specific Transfer Factors for Terrestrial Foods for Screening Purposes | IAEA SRS 19 [^1] |
+
+[^1]: IAEA SRS 19
+
+
