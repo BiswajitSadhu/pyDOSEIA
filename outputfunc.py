@@ -248,13 +248,13 @@ class OutputFunc(MetFunc):
             '#pyDOSEIA: python-based software package for radiation dose computation in case of atmospheric release                                    ')
         f.write('#\n#\n#')
         f.write(
-            '#Code written by: Dr. Biswajit Sadhu, SSS, HPD, HS & E Group (email: bsadhu@barc.gov.in)                                      ')
+            '#Code written by: Dr. Biswajit Sadhu, RS & ESS, HPD, HS & E Group (email: bsadhu@barc.gov.in)                                      ')
         f.write('#\n#\n#')
         f.write(
             '#Data compilation and benchmarking: Shri Tanmay Sarkar and Dr. Biswajit Sadhu                                                 ')
         f.write('#\n#\n#')
         f.write(
-            '#Conceptualization and supervision: Dr. Biswajit Sadhu, Shri Tanmay Sarkar, Dr. S. Anand, Shri KapilDeo Singh, Dr. M. S. Kulkarni')
+            '#Conceptualization and supervision: Dr. Biswajit Sadhu, Shri Tanmay Sarkar, Dr. S. Anand, Shri KapilDeo Singh')
         f.write('#\n#\n#')
         f.write(
             '###############################################################################################################################')
