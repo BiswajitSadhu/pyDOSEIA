@@ -69,7 +69,7 @@ def convert_none_to_str(data):
     return 'None' if data is None else data
 
 
-def process_plume_doses(loaded_data, radionuclides, distances=[100, 200]):
+def process_plume_doses_have_no_met_data(loaded_data, radionuclides, distances=[100, 200]):
     """
     Processes plume dose data from a pickle file and returns a structured DataFrame.
 
@@ -77,6 +77,7 @@ def process_plume_doses(loaded_data, radionuclides, distances=[100, 200]):
     - pickle_file (str): Path to the pickle file containing plume dose data.
     - radionuclides (list): List of radionuclide names.
     - distances (list, optional): List of distance labels. Default is [100, 200].
+    - dim_val; it is the dimension of dose array (either 6 or 16).
 
     Returns:
     - pd.DataFrame: Processed plume dose DataFrame.
@@ -88,6 +89,7 @@ def process_plume_doses(loaded_data, radionuclides, distances=[100, 200]):
     PDS = loaded_data['PLUME_DOSES']
     sectors = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE',
                'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW']
+    stab_category = ['A', 'B', 'C', 'D', 'E', 'F']
 
     num_radionuclides = len(radionuclides)
 
@@ -95,13 +97,84 @@ def process_plume_doses(loaded_data, radionuclides, distances=[100, 200]):
     psd = []
     distance_labels = []
     radionuclide_labels = []
-
+    print('PDS_shape:', np.array(PDS).shape)
+    print('PDS:', PDS)
+    # IF MET_DATA: PDS HAS SHAPE: 4,2,2,1,1,16; 4 (distance), 2(num_radionuclides)
     for dist_idx, each in enumerate(PDS):
-        each = np.array(each, dtype=object).sum(axis=0)  # Sum along axis 0
-        each_flat = [x.ravel() for x in each]  # Flatten each sub-array
-        each_concat = np.concatenate(each_flat)  # Concatenate all flattened values
-        each = each_concat.reshape(-1, 16)  # Reshape to have 16 sectors per row
+        each_flat = each.squeeze()  # Now shape is (16,) or (6,)
+        each_concat = each_flat.reshape(-1)
+        # each_concat = each_flat
+        print('each_concat:', each_concat)
+        each = each_concat.reshape(-1, 6)  # Reshape to have 16 or 6 sectors per row
+        print('each after respahe:', each)
+        # Append reshaped data
+        psd.append(each)
 
+        # Assign distance labels
+        distance_labels.extend([distances[dist_idx % len(distances)]] * num_radionuclides)
+
+        # Assign Radionuclide labels
+        radionuclide_labels.extend(radionuclides)
+
+    # Stack all `each` arrays row-wise
+    psd_stacked = np.vstack(psd)
+
+    # Convert to DataFrame
+    df_plume_dose = pd.DataFrame(psd_stacked, dtype=float, columns=stab_category)
+
+
+    # Add Distance and Radionuclide columns
+    df_plume_dose.insert(0, "Distance (m)", distance_labels)
+    df_plume_dose.insert(1, "Radionuclide", radionuclide_labels)
+
+    # Compute max values and sectors
+    df_plume_dose['Maximum'] = df_plume_dose.iloc[:, 2:].max(axis=1)
+
+    # save to .csv
+    df_plume_dose.to_csv('summary_stab_cat_wise_plume_dose.csv')
+
+    return df_plume_dose
+
+def process_plume_doses_have_met_data(loaded_data, radionuclides, distances=[100, 200]):
+    """
+    Processes plume dose data from a pickle file and returns a structured DataFrame.
+
+    Parameters:
+    - pickle_file (str): Path to the pickle file containing plume dose data.
+    - radionuclides (list): List of radionuclide names.
+    - distances (list, optional): List of distance labels. Default is [100, 200].
+    - dim_val; it is the dimension of dose array (either 6 or 16).
+
+    Returns:
+    - pd.DataFrame: Processed plume dose DataFrame.
+    """
+    # Load the data
+    # with open(pickle_file, "rb") as f:
+    #    loaded_data = cPickle.load(f)
+
+    PDS = loaded_data['PLUME_DOSES']
+    sectors = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE',
+               'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW']
+    stab_category = ['A', 'B', 'C', 'D', 'E', 'F']
+
+    num_radionuclides = len(radionuclides)
+
+    # Initialize lists to store data
+    psd = []
+    distance_labels = []
+    radionuclide_labels = []
+    print('PDS_shape:', np.array(PDS).shape)
+    print('PDS:', PDS)
+    # IF MET_DATA: PDS HAS SHAPE: 4,2,2,1,1,16; 4 (distance), 2(num_radionuclides)
+    for dist_idx, each in enumerate(PDS):
+        each = np.array(each, dtype=object).sum(axis=0)
+        # Flatten each array to make it 1D
+        each_flat = [x.ravel() for x in each]
+        # Concatenate into a single array
+        each_concat = np.concatenate(each_flat)
+        print('each_concat:', each_concat)
+        each = each_concat.reshape(-1, 16)
+        print('each after respahe:', each)
         # Append reshaped data
         psd.append(each)
 
@@ -117,6 +190,7 @@ def process_plume_doses(loaded_data, radionuclides, distances=[100, 200]):
     # Convert to DataFrame
     df_plume_dose = pd.DataFrame(psd_stacked, dtype=float, columns=sectors)
 
+
     # Add Distance and Radionuclide columns
     df_plume_dose.insert(0, "Distance (m)", distance_labels)
     df_plume_dose.insert(1, "Radionuclide", radionuclide_labels)
@@ -126,7 +200,7 @@ def process_plume_doses(loaded_data, radionuclides, distances=[100, 200]):
     df_plume_dose['Maximum Sector'] = df_plume_dose.iloc[:, 2:].idxmax(axis=1)
 
     # save to .csv
-    df_plume_dose.to_csv('summary_plume_dose.csv')
+    df_plume_dose.to_csv('summary_sector_wise_plume_dose.csv')
 
     return df_plume_dose
 
@@ -379,9 +453,21 @@ def main():
 
             # PLUME DOSE
             if config['long_term_release']:
-                df_plume = process_plume_doses(data, radionuclides, distances)
-                output_path = os.path.join(config['logdir_name'], 'summary_detailed_plume_dose.csv')
-                df_plume.to_csv(output_path)
+                if config['have_met_data']:
+                    df_plume = process_plume_doses_have_met_data(data, radionuclides, distances)
+                    output_path = os.path.join(config['logdir_name'], 'summary_detailed_sectorwise_plume_dose.csv')
+                    df_plume.to_csv(output_path)
+
+                else:
+                    df_plume = process_plume_doses_have_no_met_data(data, radionuclides, distances)
+                    output_path = os.path.join(config['logdir_name'], 'summary_detailed_stab_cat_wise_plume_dose.csv')
+                    df_plume.to_csv(output_path)
+
+            if config['single_plume']:
+                    df_plume = process_plume_doses_have_no_met_data(data, radionuclides, distances)
+                    output_path = os.path.join(config['logdir_name'], 'summary_detailed_stab_cat_wise_plume_dose.csv')
+                    df_plume.to_csv(output_path)
+
 
         else:
             DCFs, dilution_factor_sectorwise_all_distances, DOSES, INGESTION_DOSES = output_func.dose_calculation_script()
