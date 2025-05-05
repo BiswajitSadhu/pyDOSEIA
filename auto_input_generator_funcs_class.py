@@ -20,7 +20,9 @@ class InpGenFunc:
         while type(rads_list) != list:
             try:
                 rads_list = ast.literal_eval(
-                    input(color + "Provide the list of radionuclides (e.g. ['Co-60','H-3','C-14']): \n"))
+                    input(color + "Provide the list of radionuclides (e.g. ['Co-60','Cs-137']) (Note: If one of the "
+                                  "radionuclide in the input is H-3, it should be the last entry of the list of "
+                                  "radionuclides. \n")) 
                 if type(rads_list) == list:
                     xls = pd.ExcelFile("library/Dose_ecerman_final.xlsx")
                     name = pd.read_excel(xls, "surface_dose")
