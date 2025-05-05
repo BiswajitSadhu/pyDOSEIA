@@ -163,9 +163,9 @@ class RaddcfFunc(DoseFunc):
                     raise ValueError("Please provide annual discharge info (Bq/year) for each radionuclide.")
 
     def get_nuclide_info(self, nuclide_name,
-                         primary_file="/home/biswajit/Documents/HAZCAT_CODE/HazCat/pyHazCat/library/half_life/radionuclides_halflife_complete.csv",
-                         jaeri_file="/home/biswajit/Documents/HAZCAT_CODE/HazCat/pyHazCat/library/half_life/Table1_2_JAERI_half_life.csv",
-                         fallback_file="/home/biswajit/Documents/HAZCAT_CODE/HazCat/pyHazCat/library/half_life/formatted_nuclide_nomenclature.csv"):
+                         primary_file="library/half_life/radionuclides_halflife_complete.csv",
+                         jaeri_file="library/half_life/Table1_2_JAERI_half_life.csv",
+                         fallback_file="library/half_life/formatted_nuclide_nomenclature.csv"):
         """Retrieve nuclide information from fallback, primary, and JAERI datasets, and merge additional info."""
 
         def convert_half_life_to_seconds(half_life):
