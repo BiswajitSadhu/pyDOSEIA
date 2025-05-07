@@ -320,7 +320,8 @@ class MetFunc(RaddcfFunc):
             os.remove(filename)
 
         # Save the new figure
-        plt.savefig(filename, dpi=600) 
+        plt.savefig(filename, dpi=600)
+        plt.close(fig)
         #plt.savefig('%s.png' % figname, dpi=600)
 
         return
