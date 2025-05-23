@@ -1499,6 +1499,7 @@ class DoseFunc:
                         rads_ps_list.append(pl_sh_list)
                     pl_sh_sectors_list_all_year.append(rads_ps_list)
         # THIS BLOCK IS TO CONSIDER RELEASE QUANTITY IN PLUME SHINE DOSE COMPUTATION. WITHOUT THIS RESULTS ARE FOR
+
         # UNIT RELEASE;
         if self.config['long_term_release']:
             # Bq/year is converted Bq/s.
@@ -1510,7 +1511,24 @@ class DoseFunc:
                                            zip(self.config['instantaneous_release_bq_list'],
                                                pl_sh_sectors_list_all_year)]
 
-        return np.array(pl_sh_sectors_list_all_year)
+        print('pl_sh_sectors_list_all_year:', pl_sh_sectors_list_all_year)
+
+        try:
+            # Attempt to create the NumPy array directly
+            pl_sh_sectors_list_all_year = np.array(pl_sh_sectors_list_all_year)
+
+        except ValueError:  # Catch the error if direct conversion fails to form a consistent shape
+            transformed_data = []
+
+            for entry in pl_sh_sectors_list_all_year:
+                first_array_block = entry[0][0]
+                list_of_zeros = entry[1]
+                second_array_block = np.array([list_of_zeros], dtype=np.float64)
+                transformed_data.append([first_array_block, second_array_block])
+
+            pl_sh_sectors_list_all_year = np.array(transformed_data)
+
+        return pl_sh_sectors_list_all_year
 
     def zeroing_ingestion(self, df, notrelm):
         """
