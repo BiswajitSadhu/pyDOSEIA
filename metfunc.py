@@ -891,7 +891,7 @@ class MetFunc(RaddcfFunc):
             assert self.dilution_factor_sectorwise.shape == (16, )
             if self.config['have_met_data']:
                 self.max_dilution_factor = max(self.dilution_factor_sectorwise)
-            self.plot_speed_distribution(figname='stability_category_wise_speed_distribution')
+            #self.plot_speed_distribution(figname='stability_category_wise_speed_distribution')
 
         return self.dilution_factor_sectorwise
 
