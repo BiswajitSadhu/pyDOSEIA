@@ -418,33 +418,8 @@ class OutputFunc(MetFunc):
             f.write(df_hl.to_string())
 
             # TRITIUM DOSE coeffecients
-            #if 'H-3'
-            '''
-            if 'H-3' in str(self.rads_list):
-                f.write('Dose Conversion Factors used in the dose computations for radionuclide %s \n' % (
-                    str(self.rads_list[ndx])))
-                df_dcf = pd.DataFrame(DCFs,
-                            index=self.age_group,
-                            columns=['Inhalation (Sv/Bq)', 'Ground-shine (Sv-m^2/Bq-second)',
-                            'Submersion (Sv-m^3/Bq-second)', 'Ingestion (Sv/Bq)']
-                            )
 
-                f.write(df_dcf.to_string())
-                f.write('\n\n')
-            else:
-                B = np.array(DCFs, dtype=object).T
-                for ndx, A in enumerate(B):
-                    print('rads:::', str(self.rads_list[ndx]))
-                    df_dcf = pd.DataFrame(A.T, index=self.age_group,
-                                          columns=['Inhalation (Sv/Bq)', 'Ground-shine (Sv-m^2/Bq-second)',
-                                                   'Submersion (Sv-m^3/Bq-second)', 'Ingestion (Sv/Bq)'])
-                    f.write('\n\n')
-                    f.write('Dose Conversion Factors used in the dose computations for radionuclide %s \n' % (
-                        str(self.rads_list[ndx])))
-                    f.write('\n')
-                    f.write(df_dcf.to_string())
-            
-            '''
+
             B = np.array(DCFs, dtype=object).T
             for ndx, A in enumerate(B):
                 if str(self.rads_list) == 'H-3':
@@ -603,6 +578,7 @@ class OutputFunc(MetFunc):
                         f.write(
                             "following gamma energies are neglected for plume shine dose computation (in dict format): {}".format(
                                 neglected_energies))
+                    print('PPPPPP:', np.array(PLUME_DOSES).shape)
                     for ndx, each in enumerate(PLUME_DOSES):
                         f.write('\n\n')
                         f.write('Downwind Distance: {} metre'.format(self.downwind_distances[ndx]))
@@ -627,16 +603,14 @@ class OutputFunc(MetFunc):
                             "following gamma energies are neglected for plume shine dose computation (in dict format): {}".format(
                                 neglected_energies))
                     # averaging plume shine dose over all years of meteorological data
+                    print('PLUME_DOSES:', PLUME_DOSES)
+                    if PLUME_DOSES is not None:
+                        assert np.array(PLUME_DOSES).shape[0] == len(self.downwind_distances)
+                        assert np.array(PLUME_DOSES).shape[1] == len(self.rads_list)
+
                     for ndx, each in enumerate(PLUME_DOSES):
                         f.write('\n\n')
                         f.write('Downwind Distance: {} metre'.format(self.downwind_distances[ndx]))
-                        each = np.array(each, dtype=object).sum(axis=0)
-                        # Flatten each array to make it 1D
-                        each_flat = [x.ravel() for x in each]
-                        # Concatenate into a single array
-                        each_concat = np.concatenate(each_flat)
-                        # Reshape to (2, 16)
-                        each = each_concat.reshape(-1, 16)
                         df_plume_dose = pd.DataFrame(each.reshape(len(self.rads_list), 16), dtype=float,
                                                      index=self.rads_list,
                                                      columns=sectors)
@@ -706,18 +680,7 @@ class OutputFunc(MetFunc):
         # Extract values for max_dcf_inh_public and max_dcf_ing_public
         list_dcf_inhalation = [A[nuclide].get('max_dcf_inh_public', None) if A[nuclide] else None for nuclide in radionuclides]
         list_dcf_ingestion = [A[nuclide].get('max_dcf_ing_public', None) if A[nuclide] else None for nuclide in radionuclides]
-        # print('resutlsssssss:',list_dcf_inhalation, list_dcf_ingestion)
-        # Create the final 2D list
-        #list_dcfs = [inh_values, ing_values]
 
-        #print('AAA:', A)
-        #list_dcfs = [[A[key]['max_dcf_ing_public'] or 0, A[key]['max_dcf_inh_public'] or 0] for key in A]
-        #print('listsssss:', list_dcfs)
-        #list_dcfs = [[A[k]['max_dcf_inh_public'] for k in A], [A[k]['max_dcf_ing_public'] for k in A]]
-
-        #list_dcf_inhalation = list(max_rad_dcf_dict.values())
-        #list_dcf_inhalation = list_dcfs[0]
-        #list_dcf_ingestion = list_dcfs[1]
 
         # ground shine
         list_dcf_ecerman_ground_shine = self.dcf_list_ecerman_ground_shine_include_progeny(
@@ -807,8 +770,10 @@ class OutputFunc(MetFunc):
                 print(
                     "age-invariant plume shine dose is being calculated for downwind distance of {}".format(
                         X1))
+                # shape is rad_num, 16
                 plumeshine_dose_values = self.plumeshine_dose(spatial_distance=X1)
                 PLUME_DOSES.append(plumeshine_dose_values)
+
         return PLUME_DOSES
 
     # plume-shine dose
@@ -840,7 +805,13 @@ class OutputFunc(MetFunc):
                 PLUME_DOSES.append(plumeshine_dose_values)
         else:
             PLUME_DOSES = None
-        return PLUME_DOSES
+
+        # SHAPE: PLUME_DOSES: (num_distances, rad_num, 16)
+        if PLUME_DOSES is not None:
+            assert np.array(PLUME_DOSES).shape[0] == len(self.downwind_distances)
+            assert np.array(PLUME_DOSES).shape[1] == len(self.rads_list)
+
+        return np.array(PLUME_DOSES)
 
     def parallel_allage_dose_inh_gs_submersion(self):
         """

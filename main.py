@@ -167,14 +167,14 @@ def process_plume_doses_have_met_data(loaded_data, radionuclides, distances=[100
     print('PDS:', PDS)
     # IF MET_DATA: PDS HAS SHAPE: 4,2,2,1,1,16; 4 (distance), 2(num_radionuclides)
     for dist_idx, each in enumerate(PDS):
-        each = np.array(each, dtype=object).sum(axis=0)
+        # each = np.array(each, dtype=object).sum(axis=0)
         # Flatten each array to make it 1D
-        each_flat = [x.ravel() for x in each]
+        # each_flat = [x.ravel() for x in each]
         # Concatenate into a single array
-        each_concat = np.concatenate(each_flat)
-        print('each_concat:', each_concat)
-        each = each_concat.reshape(-1, 16)
-        print('each after respahe:', each)
+        # each_concat = np.concatenate(each_flat)
+        # print('each_concat:', each_concat)
+        # each = each_concat.reshape(-1, 16)
+        # print('each after respahe:', each)
         # Append reshaped data
         psd.append(each)
 

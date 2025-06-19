@@ -1377,6 +1377,12 @@ class DoseFunc:
             # HERE ALL YEAR CORRESPOND TO ONLY ONE YEAR SO NESTED THE RESULT IN AN ARRAY.
             pl_sh_sectors_list_all_year = np.array(pl_sh_sectors_list)[:, None]
 
+            # SHAPE: (rad_num, 6)
+            pl_sh_sectors_list_final = pl_sh_sectors_list_all_year.reshape(len(self.rads_list), 6)
+            print('LP_no_met_data_pl_sh_sectors_list_all_year:', pl_sh_sectors_list_final.shape)
+
+        ############### LONG-TERM RELEASE #########################################################
+
         if self.config['long_term_release']:
             X1 = spatial_distance
 
@@ -1437,10 +1443,14 @@ class DoseFunc:
                             plumeshine_dose = 5 * 10 ** (-4) * energy_rad * mu_a * \
                                               all_integral_stab_cat_energy_wise[raddx][ndx][i] * abundance_rad
                             pl_sh_sectors.append(plumeshine_dose)
+                    # SUM OVER ENERGIES
                     pl_sh_sectors = np.array(pl_sh_sectors, dtype=object).reshape(-1, 6).sum(axis=0)
                     pl_sh_sectors_list.append(pl_sh_sectors)
                 # HERE ALL YEAR CORRESPOND TO ONLY ONE YEAR SO NESTED THE RESULT IN AN ARRAY.
                 pl_sh_sectors_list_all_year = np.array(pl_sh_sectors_list)[:, None]
+                # SHAPE MUST BE (rad_num, 6)
+                pl_sh_sectors_list_final = pl_sh_sectors_list_all_year.reshape(len(self.rads_list), 6)
+                print('LP_no_met_data_pl_sh_sectors_list_all_year:', pl_sh_sectors_list_final.shape)
 
             # the case where user has provided Met data and long term release
             if self.config['have_met_data']:
@@ -1454,20 +1464,22 @@ class DoseFunc:
                 pl_sh_sectors_list_all_year = []
                 # for each year
                 for each_year in range(len(self.config['excel_sheet_name'])):
+                    print('EACH_YEAR:::::', each_year)
                     total_calm_hours = sum(self.TJFD_ALL_MISSING_CORR[each_year][:, 0, :].sum(axis=1))
                     hours_without_calm = (self.num_days[each_year] * self.operation_hours_per_day) - total_calm_hours
                     logging.getLogger("\nplume shine dose calculation").info(
-                        "Total Calm Hours: {} hours.".format(total_calm_hours))
+                        "Total Calm Hours: {} hours FOR year {}.".format(total_calm_hours, self.config['excel_sheet_name'][each_year]))
                     # for each radionuclide
                     rads_ps_list = []
                     for raddx, (all_energy_per_rad, all_emission_prob) in enumerate(zip(energies, emission_prob)):
                         energywise_ps_list = []
+                        # for each energy of a radionuclide
                         for ndx, energy in enumerate(all_energy_per_rad):
-                            mu = k_mu_mua_MFP_dict[energy][1]
+                            # mu = k_mu_mua_MFP_dict[energy][1]
                             mu_a = k_mu_mua_MFP_dict[energy][2]
                             abundance_rad = all_emission_prob[ndx]
                             ps_factors = 5 * 10 ** (-4) * energy * mu_a * abundance_rad
-                            time_unit = 3600 / (hours_without_calm * 60 * 60)
+                            # time_unit = 3600 / (hours_without_calm * 60 * 60)
                             ps_dir = []
                             # screen the pure-beta emitter (energy = 0, abundance = 0)
                             if energy > 0 and abundance_rad > 0:
@@ -1488,47 +1500,60 @@ class DoseFunc:
 
                                 # Step 2: Sum over k (speed) and j (stability categories)
                                 plumeshine_dose = np.einsum('ijkl -> il', abinte)  # Output shape: (1,16)
-
+                                print('shape_of plumeshine_dose:', np.array(plumeshine_dose).shape)
                                 ps_dir.append(plumeshine_dose)
                             # neglected radionuclide (mostly pure-beta emitter)
                             else:
                                 for each in np.zeros(16):
                                     ps_dir.append(each)
+                            print('shape_of ps_dir:', np.array(ps_dir).shape)
+                            # reshape it; make it simple; 16 values for 16 sectors
+                            ps_dir = np.array(ps_dir).reshape(1,16)
+                            print('shape_of ps_dir:', np.array(ps_dir).shape)
                             energywise_ps_list.append(ps_dir)
+                        print('shape_of energywise_ps_list:', np.array(energywise_ps_list).shape)
+                        # summing all energy contributions of a radionuclide
                         pl_sh_list = np.array(energywise_ps_list).sum(axis=0)
+                        print('shape_of pl_sh_list:', np.array(pl_sh_list).shape)
                         rads_ps_list.append(pl_sh_list)
+                    # shape is rad_num, 1, 16
+                    print('shape_of rads_ps_list:', np.array(rads_ps_list).shape)
+                    # shape is rad_num, 16
+                    rads_ps_list = np.array(rads_ps_list).reshape(len(self.rads_list), 16)
+
+                    print('shape_of mod_rads_ps_list:', np.array(rads_ps_list).shape)
                     pl_sh_sectors_list_all_year.append(rads_ps_list)
-        # THIS BLOCK IS TO CONSIDER RELEASE QUANTITY IN PLUME SHINE DOSE COMPUTATION. WITHOUT THIS RESULTS ARE FOR
+        # shape is num_year, rad_num, 16
+        # print('shape_of pl_sh_sectors_list_all_year:', np.array(pl_sh_sectors_list_all_year).shape)
+        # THIS BLOCK IS TO CONSIDER RELEASE QUANTITY IN PLUME SHINE DOSE COMPUTATION. WITHOUT THIS RESULTS GIVE /hour DOSE
 
         # UNIT RELEASE;
         if self.config['long_term_release']:
             # Bq/year is converted Bq/s.
             release_bq_per_sec = np.array(self.config['annual_discharge_bq_rad_list'])/float(31536000)
-            pl_sh_sectors_list_all_year = [[[b * x for x in inner] for inner in outer] for b, outer in
-                                           zip(release_bq_per_sec, pl_sh_sectors_list_all_year)]
+            # sector-wise sum of the value of all years and them average it; shape (rad_num, 16)
+            if self.config['have_met_data']:
+                # average over the years
+                pl_sh_sectors_list_average_year = np.array(pl_sh_sectors_list_all_year).sum(axis=0) / len(self.config['excel_sheet_name'])
+            else:
+                pl_sh_sectors_list_average_year = np.array(pl_sh_sectors_list_final)
+            # multiply with release (Bq/s) and get microSv/h.
+            # FINAL SHAPE: (rad_num, 16/6)
+            pl_sh_sectors_list_final = np.array(pl_sh_sectors_list_average_year * release_bq_per_sec[:, np.newaxis])
+
+            print('shape pl_sh_sectors_list_final:,', np.array(pl_sh_sectors_list_final).shape)
+
         else:
-            pl_sh_sectors_list_all_year = [[[b * x for x in inner] for inner in outer] for b, outer in
-                                           zip(self.config['instantaneous_release_bq_list'],
-                                               pl_sh_sectors_list_all_year)]
+            # SHORT-TERM RELEASE
+            # FINAL SHAPE: (rad_num, 6)
+            release_bq_per_sec = np.array(self.config['instantaneous_release_bq_list'])
+            pl_sh_sectors_list_final = np.array(pl_sh_sectors_list_final) * release_bq_per_sec[:, np.newaxis]
 
-        print('pl_sh_sectors_list_all_year:', pl_sh_sectors_list_all_year)
+            print('shape pl_sh_sectors_list_final:,', np.array(pl_sh_sectors_list_final).shape)
 
-        try:
-            # Attempt to create the NumPy array directly
-            pl_sh_sectors_list_all_year = np.array(pl_sh_sectors_list_all_year)
+        assert pl_sh_sectors_list_final.shape[0] == len(self.rads_list)
 
-        except ValueError:  # Catch the error if direct conversion fails to form a consistent shape
-            transformed_data = []
-
-            for entry in pl_sh_sectors_list_all_year:
-                first_array_block = entry[0][0]
-                list_of_zeros = entry[1]
-                second_array_block = np.array([list_of_zeros], dtype=np.float64)
-                transformed_data.append([first_array_block, second_array_block])
-
-            pl_sh_sectors_list_all_year = np.array(transformed_data)
-
-        return pl_sh_sectors_list_all_year
+        return pl_sh_sectors_list_final
 
     def zeroing_ingestion(self, df, notrelm):
         """
