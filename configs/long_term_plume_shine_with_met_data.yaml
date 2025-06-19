@@ -1,0 +1,146 @@
+Z: 0
+age_group:
+- 1
+- 18
+animal_feed_type: leafy_vegetables
+animal_product_list_for_tritium:
+- cow_milk
+- goat_meat
+annual_discharge_bq_rad_list:
+- 219000000000000
+- 1150000000
+- 2470000000
+- 2870000000
+- 6260000000
+- 7670000000
+- 18200000000
+- 8100000000
+- 500000000
+- 500000000
+- 945000000000000
+calm_correction: true
+climate: Continental
+column_names:
+- HOUR
+- WS 20m(kmph)
+- DIR at 20m
+- STBCLASS
+consider_progeny: true
+downwind_distances:
+- 100
+- 200
+- 300
+- 500
+- 700
+- 1000
+- 1600
+- 2000
+- 3000
+- 4000
+- 5000
+element_list:
+- Ar
+- Kr
+- Kr
+- Kr
+- Xe
+- Xe
+- Xe
+- I
+- Cs
+- Sr
+- H
+end_operation_time: 24
+excel_sheet_name:
+- '2016'
+- '2017'
+- '2018'
+- '2019'
+- '2020'
+exposure_period: 30
+have_dilution_factor: false
+have_met_data: true
+ignore_half_life: 1800
+inges_param_dict:
+  C_wi: 0
+  alpha: 3
+  alpha_dry_forage: 3
+  alpha_wet_crops: 0.3
+  f_p: 0.7
+  q_f: 1.2
+  q_m: 16
+  q_w: 0.06
+  q_w_meat: 0.004
+  t_b: 11000
+  t_e: 30
+  t_e_food_crops: 60
+  t_e_forage_grass: 30
+  t_f: 20
+  t_h_animal_pasture: 0
+  t_h_animal_stored_feed: 90
+  t_h_wet_crops: 14
+  t_m: 1
+inges_param_dict_adult:
+  DID_fish: 0.05
+  DID_meat: 0.04
+  DID_milk: 0.5
+  DID_veg: 1.05
+  DID_water_and_beverage: 0.002
+inges_param_dict_infant:
+  DID_fish: 0.004109
+  DID_meat: 0.0032876
+  DID_milk: 0.4
+  DID_veg: 0.215
+  DID_water_and_beverage: 0.0007123
+input_file_name: dh
+logdir_name: dev
+long_term_release: true
+max_conc_plume_central_line_gl: true
+max_dilution_factor: null
+measurement_height: 20
+num_days:
+- 366
+- 365
+- 365
+- 365
+- 366
+output_file_name: long_term_plume_shine_with_met_data.out
+path_met_file: met_data/Hourly_data_2016_2020_Trombay.xlsx
+pickle_it: false
+plant_boundary: 1600
+plot_dilution_factor: true
+rads_list:
+- Ar-41
+- Kr-85m
+- Kr-87
+- Kr-88
+- Xe-133
+- Xe-135
+- Xe-138
+- I-131
+- Cs-137
+- Sr-90
+- H-3
+release_height: 100
+run_dose_computation: true
+run_plume_shine_dose: true
+run_ps_dose_parallel: true
+sampling_time: 60
+scaling_dilution_factor_based_on_met_data_speed_distribution: true
+single_plume: false
+soiltype: peatsoil
+start_operation_time: 0
+type_rad:
+- Max
+- Max
+- Max
+- Max
+- Max
+- Max
+- Max
+- Max
+- Max
+- Max
+- Max
+veg_type_list: leafy_vegetables
+weathering_corr: true
