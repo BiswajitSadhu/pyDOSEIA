@@ -951,7 +951,7 @@ class RaddcfFunc(DoseFunc):
             if type_rad_elem == 'Max':
                 # consider all types: F, M, S and take the max value as dcf
                 # search by type for the earlier chosen nuclide
-                search_string_type = '|'.join(['F', 'M', 'S'])
+                search_string_type = '|'.join(['F', 'M', 'S', 'V'])
             else:
                 # search by type for the earlier chosen nuclide
                 search_string_type = '|'.join([str(type_rad_elem)])
