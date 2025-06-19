@@ -402,13 +402,38 @@ class OutputFunc(MetFunc):
             ### PRINT DCFs ##################
             f.write('\n\n')
             f.write('########## Dose Conversion Factors:##############')
+
             f.write('\n')
+            f.write('Dose Coefficient and Radionuclide Property References:\n')
+            f.write('\n')
+
             f.write(
-                'Ref 1: External Exposure to Radionuclides in Air, Water and Soil, Federal Guidance Report No. 15. (2019)')
-            f.write('\n')
+                '1. Inhalation: Effective Dose Coefficients for Inhalation of Radionuclides for Members of the Public — ICRP Publication 119 (2012)\n')
             f.write(
-                'Ref 2: International Atomic Energy Agency, Radiation Protection and Safety of Radiation Sources: International Basic Safety Standards. IAEA Safety Standards Series No. GSR Part 3 Vienna (2014)')
+                '2. Inhalation: Dose Coefficients for Soluble or Reactive Gases and Vapours — ICRP Publication 119 (2012)\n')
+            f.write('3. Inhalation: Effective Dose Coefficients from Inhaled Air — DOE-STD-1196-2011\n')
+            f.write('4. Inhalation: Inhalation Dose Coefficients to Age 70 Years (Sv/Bq) — JAERI-Data/Code 2002-013\n')
+            f.write(
+                '5. Inhalation: Dose Coefficients for Soluble or Reactive Gases and Vapours (Class SR-1 and SR-2) — JAERI-Data/Code 2002-013\n')
+            f.write('6. Ground Shine: Dose Rate Coefficients for Ground Surface (Sv/Bq/s/m²) — FGR-15 (USDOE)\n')
+            f.write('7. Submersion: Dose Rate Coefficients for Air Submersion (Sv/Bq/s/m³) — FGR-15 (USDOE)\n')
+            f.write(
+                '8. Ingestion: Effective Dose Coefficients for Ingestion to Age 70 Years (Sv/Bq) — ICRP Publication 119 (2012)\n')
+            f.write('9. Ingestion: Ingestion Dose Coefficients to Age 70 Years (Sv/Bq) — JAERI-Data/Code 2002-013\n')
+            f.write('10. Half-Life: Radionuclide Properties — ICRP Publication 107 (2008)\n')
+            f.write(
+                '11. Half-Life: Dose Coefficient Database for Ingestion and Inhalation of Particulates — JAERI-Data/Code 2002-013\n')
+            f.write('12. Half-Life: Dose Coefficient Database for Inert Gases — JAERI-Data/Code 2002-013\n')
+            f.write(
+                '13. Gamma Emission: Recommended Gamma Ray Energies and Emission Probabilities by Radionuclide — IAEA (2007)\n')
+
             f.write('\n')
+            #f.write(
+            #    'Ref 1: External Exposure to Radionuclides in Air, Water and Soil, Federal Guidance Report No. 15. (2019)')
+            #f.write('\n')
+            #f.write(
+            #    'Ref 2: International Atomic Energy Agency, Radiation Protection and Safety of Radiation Sources: International Basic Safety Standards. IAEA Safety Standards Series No. GSR Part 3 Vienna (2014)')
+            #f.write('\n')
 
             half_lives, lamb_rads = self.find_half_life_and_decay_const_radionuclides()
             df_hl = pd.DataFrame(half_lives, index=self.rads_list, columns=['Half life (in second)'])
