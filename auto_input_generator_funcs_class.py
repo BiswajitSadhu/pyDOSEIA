@@ -22,7 +22,7 @@ class InpGenFunc:
                 rads_list = ast.literal_eval(
                     input(color + "Provide the list of radionuclides (e.g. ['Co-60','Cs-137']) (Note: If one of the "
                                   "radionuclide in the input is H-3, it should be the last entry of the list of "
-                                  "radionuclides. \n")) 
+                                  "radionuclides. \n"))
                 if type(rads_list) == list:
                     xls = pd.ExcelFile("library/Dose_ecerman_final.xlsx")
                     name = pd.read_excel(xls, "surface_dose")
@@ -1153,28 +1153,29 @@ class InpGenFunc:
 
         with open(f'{logdir_name}/{filename}.yaml', 'r') as infile:
             data = yaml.safe_load(infile)
-            # Collect lengths in a list
-            lengths = [(len(data['element_list']), len(data['type_rad']), len(data['rads_list']))]
-            # Append based on the release type
-            if data.get('long_term_release'):
-                lengths.append(len(data['annual_discharge_bq_rad_list']))
-            else:
-                lengths.append(len(data['instantaneous_release_bq_list']))
+            if data.get('run_dose_computation', True):
+                # Collect lengths in a list
+                lengths = [(len(data['element_list']), len(data['type_rad']), len(data['rads_list']))]
+                # Append based on the release type
+                if data.get('long_term_release'):
+                    lengths.append(len(data['annual_discharge_bq_rad_list']))
+                else:
+                    lengths.append(len(data['instantaneous_release_bq_list']))
 
-            # Flatten the list of lengths
-            flat_lengths = [item for sublist in lengths for item in
+                # Flatten the list of lengths
+                flat_lengths = [item for sublist in lengths for item in
                             (sublist if isinstance(sublist, tuple) else (sublist,))]
 
-            print("Checking the input File:")
+                print("Checking the input File:")
 
-            # Check if all lengths are equal
-            if len(set(flat_lengths)) > 1:
-                raise ValueError(
-                    "Please check the input file. The following entries (element_list, type_rad, rads_list, "
-                    "annual_discharge_bq_rad_list/instantaneous_release_bq_list) must have the same length."
-                )
-            else:
-                print("PASSED initial checking!!")
+                # Check if all lengths are equal
+                if len(set(flat_lengths)) > 1:
+                    raise ValueError(
+                        "Please check the input file. The following entries (element_list, type_rad, rads_list,"
+                        "annual_discharge_bq_rad_list/instantaneous_release_bq_list) must have the same length."
+                    )
+                else:
+                    print("PASSED initial checking!!")
 
             if 'logdir_name' in data:
                 data['logdir_name'] = logdir_name
