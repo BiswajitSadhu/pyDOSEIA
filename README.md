@@ -62,4 +62,4 @@ We welcome contributions to the pyDOSEIA project! If you have suggestions, want 
 
 **Contact information**
 
-Copyright(C) 2023 Authors and Developers: Dr. Biswajit Sadhu (biswajit.chem001@gmail.com), Mr. Tanmay Sarkar (tanmays@barc.gov.in).
+Copyright(C) 2023 Authors and Developers: Dr. Biswajit Sadhu (biswajit.chem001@gmail.com), Dr. Tanmay Sarkar (tanmays@barc.gov.in).
