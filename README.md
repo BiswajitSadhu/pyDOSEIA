@@ -22,7 +22,7 @@ The installation guides for these environments are provided below:
 conda create -n pydose python=3.10
 conda activate pydose
 conda install numpy scipy matplotlib pandas xlrd openpyxl yaml pyyaml joblib
-pip install colorama
+
 python auto_input_generator.py
 ```
 
