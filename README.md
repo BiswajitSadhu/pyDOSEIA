@@ -4,7 +4,11 @@
 
 Description: We introduce pyDOSEIA, a robust Python package, designed for radiation risk assessment and dose calculation in scenarios such as nuclear events, radiological accidents, and environmental contamination. Built on advanced computational models, it offers tools for estimating doses from various exposure pathways like inhalation, ingestion, external exposure, and plume shine. Featuring parallel processing and up-to-date dose conversion factors, pyDOSEIA ensures accurate calculations for both short-term and long-term exposures. With a user-friendly input generator module, it empowers researchers and policymakers in radiation risk assessment and emergency preparedness.
 
-**BIG NEWS!!! pyDOSEIA article is now accepted for publication at Health Physics journal!! Link will be shared shortly.**
+## 🚀 BIG NEWS!!!  
+**pyDOSEIA article is now accepted for publication in *Health Physics* journal!** 🎉  
+
+👉 [Read the article here](https://journals.lww.com/health-physics/fulltext/9900/pydoseia__a_python_package_for_radiological_impact.270.aspx)
+
 
 **A Simple pyDOSEIA flowchart**
 ![fig1(1)](https://github.com/user-attachments/assets/45cfc567-2ac9-48e4-9511-4f799767b049)
